@@ -1,24 +1,31 @@
+import java.awt.event.KeyEvent;
+
 import javax.swing.JFrame;
 
+import input.InputUtility;
 import logic.*;
-import render.GameScreen;
+import render.*;
 
 public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		JFrame f  = new JFrame("Dragon Heart");
+		JFrame f = new JFrame("Dragon Heart");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Player player1 = new Player(0,2,0);
+		Player player1 = new Player(0, 5, 0);
+		new Background(player1);
+		new Foreground(player1);
 		GameScreen gameScreen = new GameScreen();
-		
+
 		f.add(gameScreen);
+
 		f.setVisible(true);
 		f.pack();
-		
-		int test = 1000;
-		int time = 0;
-		while(true){
+		gameScreen.requestFocus();
+		player1.play();
+		//Debug
+//		int i =0;
+		while (true) {
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
@@ -26,22 +33,44 @@ public class Main {
 				e.printStackTrace();
 			}
 			gameScreen.repaint();
-			if(test > 0 && !player1.isPlaying()){
-				player1.play();
-				test--;
+			
+//			if ((player1.getStatus() == 3 || player1.getStatus() == 2) && InputUtility.getKeytriggered(KeyEvent.VK_Z)) {
+//				System.out.println("JumpHit!");
+//				player1.jumpHit();
+//			}	
+			if(InputUtility.getKeytriggered(KeyEvent.VK_Z)){
+				if(player1.isOnGround())
+					player1.hit();
+				else
+					player1.jumpHit();
 			}
+			if (InputUtility.getKeypressed(KeyEvent.VK_RIGHT)) {
+//				 System.out.println("Right!");
+				player1.walk(true);
+			}
+			else if (InputUtility.getKeypressed(KeyEvent.VK_LEFT)) {
+				// System.out.println("L!");
+				player1.walk(false);
+			}
+			else if(player1.getStatus() != 2 && player1.getStatus() != 3){
+				player1.stand();
+			}
+			if (InputUtility.getKeytriggered(KeyEvent.VK_SPACE) &&player1.getStatus() != 3) {
+//				 System.out.println("Jump!");
+				player1.jump();
+			}
+//			else if( InputUtility.getKeypressed(KeyEvent.VK_SPACE) == false && !player1.isOnGround()){
+//				player1.fall();
+//			}
+			
+//			System.out.println(player1.getStatus());
+//			i++;
+//			if(i%20==0)
+//				System.out.println();
 			player1.updateAnimation();
-			if(player1.getX() >= 200 && player1.getY() <= 200){
-				int a = -1;
-				player1.setY(player1.getY()-(player1.getSpeed()*time/10+(time*time*a)/200));
-				player1.setX(player1.getX()+player1.getSpeed());
-				time++;
-			} else{
-				time = 0;
-				player1.setY(200);
-				player1.setX(player1.getX()+player1.getSpeed());
-			}
+			player1.updatePosition();
+			InputUtility.postUpdate();
 		}
 	}
-	
+
 }

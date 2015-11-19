@@ -2,6 +2,7 @@ package logic;
 
 public class Data {
 	public static final int MAX_HP = 3;
+	public static final int GRAVITY = -15;
 	public static final int screenWidth = 1024;
 	public static final int screenHeight = 480;
 	public static final int[] hpMon = {1,1,1,2,2,3,100};
