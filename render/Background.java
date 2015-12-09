@@ -12,21 +12,19 @@ public class Background implements IRenderable{
 	private boolean visible;
 	private Player player;
 	
-	public Background(Player player) {
+	public Background(Player player, int map) {
 		super();
 		visible = true;
 		this.player = player;
 		try{
-			ClassLoader loader = Player.class.getClassLoader();
-			bg = ImageIO.read(loader.getResource("src/background/lv1_bg.png"));
+			ClassLoader loader = Background.class.getClassLoader();
+			bg = ImageIO.read(loader.getResource("src/background/lv"+map+"_bg.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			bg = null;
 		}
 		RenderableHolder.getInstance().add(this);
 	}
-
-	
 	
 	@Override
 	public boolean isVisible() {
@@ -43,7 +41,8 @@ public class Background implements IRenderable{
 	@Override
 	public void render(Graphics2D g2) {
 		// TODO Auto-generated method stub
-		g2.drawImage(bg, null, -player.getX()/10, 0);
+		int x = (player==null)?0:-player.getX()/10;
+		g2.drawImage(bg, null, x, 0);
 	}
 
 }

@@ -1,16 +1,18 @@
 package logic;
 
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import input.InputUtility;
 import render.IRenderable;
 import render.RenderableHolder;
 
-public class Player extends Character implements IRenderable {
+public class Player extends Character implements IRenderable,Runnable {
 	private BufferedImage pStand = null;
 	private BufferedImage pWalk = null;
 	private BufferedImage pJump = null;
@@ -67,6 +69,10 @@ public class Player extends Character implements IRenderable {
 
 	public void start(int level) {
 		switch (level) {
+		case 1: //menu
+			this.x = 0;
+			this.y = 0;
+			break;
 		default:
 			this.x = 60;
 			this.y = 310;
@@ -149,12 +155,12 @@ public class Player extends Character implements IRenderable {
 	@Override
 	public void jump() {
 		// TODO Auto-generated method stub
-		if(jumpTime < 2 && hitting){
+		if(jumpTime < 1 && hitting){
 			speedY = jumpSpeed;
 			jumpTime++;
 			onGround = false;
 		}
-		else if (jumpTime < 2 && status != 3 && status != 5) {
+		else if (jumpTime < 1 && status != 3 && status != 5) {
 			status = 2;
 			jumpTime++;
 			speedY = jumpSpeed;
@@ -190,7 +196,10 @@ public class Player extends Character implements IRenderable {
 	}
 
 	public void stop() {
-		currentFrame = 0;
+		if(hitting)
+			currentFrame = frameCount-1;
+		else
+			currentFrame = 0;
 		playing = true;
 		visible = true;
 	}
@@ -205,13 +214,15 @@ public class Player extends Character implements IRenderable {
 		
 		frameDelayCount = frameDelay;
 		currentFrame++;
-		
 		if (currentFrame == frameCount) {
 			stop();
 			if(hitting){
 				hitting = false;
 			}	
-		}
+			
+			
+		} 
+			
 	}
 
 	public boolean isPlaying() {
@@ -251,12 +262,16 @@ public class Player extends Character implements IRenderable {
 			op = getOp();
 		}
 		switch(status){
-		case 0: 
-			
-			g2.drawImage(pStand,
-				op, x - (pStand.getWidth() / 2), y - (pStand.getHeight() / 2));
+		case 0: //stand
+			if(onGround)
+				g2.drawImage(pStand,
+						op, x - (pStand.getWidth() / 2), y - (pStand.getHeight() / 2));
+			else g2.drawImage(
+					pJump.getSubimage(currentFrame * pJump.getWidth() / 8, 0, pJump.getWidth() / 8, pJump.getHeight()),
+					op, x - (pJump.getWidth() / 16), y - (pJump.getHeight() / 2));
+				
 				break;
-		case 1: 
+		case 1: //walk/jump
 			if(onGround)
 				g2.drawImage(
 						pWalk.getSubimage(currentFrame * pWalk.getWidth() / 8, 0,pWalk.getWidth() / 8, pWalk.getHeight()),
@@ -266,19 +281,19 @@ public class Player extends Character implements IRenderable {
 					op, x - (pJump.getWidth() / 16), y - (pJump.getHeight() / 2));
 				
 				break;
-		case 2: 
+		case 2: //jump
 			g2.drawImage(
 				pJump.getSubimage(currentFrame * pJump.getWidth() / 8, 0, pJump.getWidth() / 8, pJump.getHeight()),
 				op, x - (pJump.getWidth() / 16), y - (pJump.getHeight() / 2));
 				break;
-		case 3: 
+		case 3: //jump
 			
 			g2.drawImage(
 				pJump.getSubimage(currentFrame * pJump.getWidth() / 8, 0, pJump.getWidth() / 8, pJump.getHeight()),
 				op, x - (pJump.getWidth() / 16), y - (pJump.getHeight() / 2));
 				break;
-		case 4: 
-
+		case 4: //hit2
+			
 			if(facing){
 				op = getOp();
 			}else
@@ -287,16 +302,47 @@ public class Player extends Character implements IRenderable {
 				pHit2.getSubimage(currentFrame * pHit2.getWidth() / 8, 0, pHit2.getWidth() / 8, pHit2.getHeight()),
 				op, x - (pHit2.getWidth() / 16), y - (pHit2.getHeight() / 2));
 				break;
-		case 5: 
+		case 5: //hit1
 //			System.out.println("Draw " + currentFrame);
 			g2.drawImage(
 				pHit1.getSubimage(currentFrame * pHit1.getWidth() / 8, 0, pHit1.getWidth() / 8, pHit1.getHeight()),
 				op, x - (pHit1.getWidth() / 16), y - (pHit1.getHeight() / 2));
 				break;
-		case 100: 
+		case 100: //die
 			g2.drawImage(pDie,
 				op, x - (pDie.getWidth() / 2), y - (pDie.getHeight() / 2));
 				break;
+		}
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		play();
+		while(true){
+			
+			if(InputUtility.getKeytriggered(KeyEvent.VK_Z)){
+				if(this.isOnGround())
+					this.hit();
+				else
+					this.jumpHit();
+			}
+			if (InputUtility.getKeypressed(KeyEvent.VK_RIGHT)) {
+				this.walk(true);
+			}
+			else if (InputUtility.getKeypressed(KeyEvent.VK_LEFT)) {
+				this.walk(false);
+			}
+			else if(this.getStatus() != 2 && this.getStatus() != 3){
+				this.stand();
+			}
+			if (InputUtility.getKeytriggered(KeyEvent.VK_SPACE) &&this.getStatus() != 3) {
+				this.jump();
+			}
+			this.updateAnimation();
+			this.updatePosition();
+			InputUtility.postUpdate();
+
 		}
 	}
 }

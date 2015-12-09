@@ -11,14 +11,15 @@ public class Foreground implements IRenderable{
 	private BufferedImage fg = null;
 	private boolean visible;
 	private Player player;
-	
-	public Foreground(Player player) {
+	public boolean fadable;
+	public Foreground(Player player,int map,boolean fadable) {
 		super();
 		visible = true;
+		this.fadable = fadable;
 		this.player = player;
 		try{
 			ClassLoader loader = Player.class.getClassLoader();
-			fg = ImageIO.read(loader.getResource("src/background/lv1_fg.png"));
+			fg = ImageIO.read(loader.getResource("src/background/lv"+map+"_fg.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fg = null;
@@ -43,7 +44,8 @@ public class Foreground implements IRenderable{
 	@Override
 	public void render(Graphics2D g2) {
 		// TODO Auto-generated method stub
-		g2.drawImage(fg, null, -player.getX()*2/4, 0);
+		int x = (player == null)?0:-player.getX()/2;
+		g2.drawImage(fg, null, x, 0);
 	}
 
 }
