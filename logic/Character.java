@@ -1,6 +1,7 @@
 package logic;
 
-public abstract class Character {
+
+public abstract class Character{
 	protected int status;
 	protected int x;
 	protected int y;
@@ -14,7 +15,22 @@ public abstract class Character {
 	protected int frameWidth,frameHeight;
 	protected int currentFrame,frameDelayCount;
 	protected int frameCount,frameDelay;
+	protected float fade;
 	
+	public Character(int status,int speed){
+		this.status = status;
+		this.speed = speed;
+		this.fade = 1f;
+		
+	}
+	public float getFade() {
+		return fade;
+	}
+
+	public void setFade(float fade) {
+		this.fade = fade;
+	}
+
 	public boolean isOnGround() {
 		return onGround;
 	}
@@ -31,10 +47,7 @@ public abstract class Character {
 		this.ground = ground;
 	}
 	
-	public Character(int status,int speed){
-		this.status = status;
-		this.speed = speed;
-	}
+	
 	
 	public int getStatus() {
 		return status;
@@ -51,7 +64,7 @@ public abstract class Character {
 	}
 
 	public void setX(int x) {
-		if(x >= 0 && x <= Data.screenWidth) 
+		if(x >= 0 && x <= Data.levelExtent) 
 			this.x = x;
 	}
 

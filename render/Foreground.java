@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import logic.Data;
 import logic.Player;
 
 public class Foreground implements IRenderable{
@@ -44,8 +45,21 @@ public class Foreground implements IRenderable{
 	@Override
 	public void render(Graphics2D g2) {
 		// TODO Auto-generated method stub
-		int x = (player == null)?0:-player.getX()/2;
-		g2.drawImage(fg, null, x, 0);
+		int scrollX;
+		if(player==null)
+			scrollX = 0;
+		else{
+		scrollX = Data.screenWidth/3 - player.getX();
+		int levelExtentX = Data.levelExtent;
+		 
+		if (player.getX() < Data.screenWidth/3)
+		    scrollX = 0;
+		else if (player.getX() > levelExtentX - 2*Data.screenWidth/3)
+		    scrollX = -(levelExtentX - Data.screenWidth/3);
+		}
+		g2.drawImage(fg, null, scrollX, 0);
+		if(player!=null)
+			System.out.println(player.getX() + " x:scX "+scrollX);
 	}
 
 }

@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import logic.Data;
 import logic.Player;
 
 public class Background implements IRenderable{
@@ -41,8 +42,13 @@ public class Background implements IRenderable{
 	@Override
 	public void render(Graphics2D g2) {
 		// TODO Auto-generated method stub
-		int x = (player==null)?0:-player.getX()/10;
+		int x;
+		if(player==null){
+			x = 0;
+		}else
+			x = -player.getX()/8;
 		g2.drawImage(bg, null, x, 0);
+		
 	}
 
 }
