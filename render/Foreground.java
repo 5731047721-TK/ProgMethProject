@@ -55,11 +55,10 @@ public class Foreground implements IRenderable{
 		if (player.getX() < Data.screenWidth/3)
 		    scrollX = 0;
 		else if (player.getX() > levelExtentX - 2*Data.screenWidth/3)
-		    scrollX = -(levelExtentX - Data.screenWidth/3);
+		    scrollX = -(levelExtentX - Data.screenWidth);
+//			scrollX = Data.screenWidth/3 - player.getX();
 		}
 		g2.drawImage(fg, null, scrollX, 0);
-		if(player!=null)
-			System.out.println(player.getX() + " x:scX "+scrollX);
 	}
 
 }
