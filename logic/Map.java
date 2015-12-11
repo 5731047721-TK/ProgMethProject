@@ -28,9 +28,15 @@ public class Map implements Runnable{
 		fg = new Foreground(p1, 1, false,no-1);
 		fg2 = new Foreground(p1, 1, false,no);
 		
-		Monster m1 = new Monster(0,1,1,1,p1);
+		Monster m1 = new Monster(0,1,1,p1);
+		Monster m2 = new Monster(0,2,2,p1);
+		Monster m3 = new Monster(0,1,3,p1);
 		Thread mon1 = new Thread(m1);
+		Thread mon2 = new Thread(m2);
+		Thread mon3 = new Thread(m3);
 		mon1.start();
+		mon2.start();
+		mon3.start();
 		player.start();
 		
 	}
@@ -59,6 +65,7 @@ public class Map implements Runnable{
 				RenderableHolder.getInstance().getRenderableList().remove(fg3);
 				no--;
 				bg = new Background(p1, 1, no);
+				fg = new Foreground(p1, 1, false, no-2);
 				fg2 = new Foreground(p1, 1, false,(no-1));
 				fg3 = new Foreground(p1, 1, false,(no));
 			}	

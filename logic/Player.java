@@ -26,8 +26,12 @@ public class Player extends Character implements IRenderable, Runnable {
 	private boolean visible;
 	private boolean playing;
 	private boolean hitting;
-	private boolean facing;
+	
 
+	private boolean facing;
+	
+	private boolean die;
+	
 	public Player(int status, int speed, int gender) {
 		super(status, speed);
 		this.hp = Data.MAX_HP;
@@ -92,6 +96,14 @@ public class Player extends Character implements IRenderable, Runnable {
 
 		}
 	}
+	
+	public boolean isHitting() {
+		return hitting;
+	}
+	
+	public boolean isFacing() {
+		return facing;
+	}
 
 	@Override
 	public void walk(boolean way) {
@@ -153,7 +165,7 @@ public class Player extends Character implements IRenderable, Runnable {
 	@Override
 	public void die() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -352,6 +364,9 @@ public class Player extends Character implements IRenderable, Runnable {
 				if (instance.getKeytriggered(KeyEvent.VK_SPACE) && this.getStatus() != 3) {
 					this.jump();
 				}
+			}
+			if(die){
+				
 			}
 			instance.postUpdate();
 			this.updateAnimation();

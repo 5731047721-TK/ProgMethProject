@@ -45,7 +45,7 @@ public class MainMenu implements Runnable {
 		Thread p1 = new Thread(player1);
 		new Background(player1, 1, 1);
 		new Foreground(player1, 1, false,0);
-		Monster m1 = new Monster(0,1,1,1,player1);
+		Monster m1 = new Monster(0,1,1,player1);
 		p1.start();
 		start = true;
 	}

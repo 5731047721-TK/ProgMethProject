@@ -9,7 +9,7 @@ public class Data {
 	public static final int foregroundWidth = 1555;
 	public static final int hpInit[] = {253,415};
 	public static final int furyInit[] = {253,446};
-	public static final int[] hpMon = {1,1,1,2,2,3,100};
+	public static final int[] hpMon = {2,2,2,3,100};
 	//will be changed when actual sprite done
 	public static final int frameCountMaleWalk = 4;
 	public static final int frameCountMaleHit = 4;
