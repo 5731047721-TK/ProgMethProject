@@ -104,7 +104,7 @@ public class Player extends Character implements IRenderable, Runnable {
 				currentFrame = 0;
 			status = 1;
 		}
-		if (way)
+		if (facing)
 			speedX = speed;
 		else
 			speedX = -speed;
@@ -330,7 +330,7 @@ public class Player extends Character implements IRenderable, Runnable {
 		InputUtility instance = InputUtility.getInstance();
 		while (true) {
 			try {
-				Thread.sleep(20);
+				Thread.sleep(18);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

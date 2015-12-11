@@ -13,11 +13,13 @@ public class Foreground implements IRenderable{
 	private boolean visible;
 	private Player player;
 	public boolean fadable;
-	public Foreground(Player player,int map,boolean fadable) {
+	private int offset;
+	public Foreground(Player player,int map,boolean fadable,int offset) {
 		super();
 		visible = true;
 		this.fadable = fadable;
 		this.player = player;
+		this.offset = offset;
 		try{
 			ClassLoader loader = Player.class.getClassLoader();
 			fg = ImageIO.read(loader.getResource("src/background/lv"+map+"_fg.png"));
@@ -39,6 +41,7 @@ public class Foreground implements IRenderable{
 	@Override
 	public int getZ() {
 		// TODO Auto-generated method stub
+		if(player == null) return 7777;
 		return -7777;
 	}
 
@@ -56,9 +59,8 @@ public class Foreground implements IRenderable{
 		    scrollX = 0;
 		else if (player.getX() > levelExtentX - 2*Data.screenWidth/3)
 		    scrollX = -(levelExtentX - Data.screenWidth);
-//			scrollX = Data.screenWidth/3 - player.getX();
 		}
-		g2.drawImage(fg, null, scrollX, 0);
+		g2.drawImage(fg, null, scrollX + Data.foregroundWidth*offset, 0);
 	}
 
 }

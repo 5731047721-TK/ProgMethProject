@@ -5,7 +5,10 @@ public class Data {
 	public static final int GRAVITY = -15;
 	public static final int screenWidth = 1024;
 	public static final int screenHeight = 480;
-	public static final int levelExtent = 1555;
+	public static final int levelExtent = 4*1555;
+	public static final int foregroundWidth = 1555;
+	public static final int hpInit[] = {253,415};
+	public static final int furyInit[] = {253,446};
 	public static final int[] hpMon = {1,1,1,2,2,3,100};
 	//will be changed when actual sprite done
 	public static final int frameCountMaleWalk = 4;

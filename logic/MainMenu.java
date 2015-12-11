@@ -19,8 +19,8 @@ public class MainMenu implements Runnable {
 	public MainMenu() {
 		start = false;
 		update = false;
-		bg = new Background(null, 9998);
-		eye = new Foreground(null, 9998, true);
+		bg = new Background(null, 9998, 0);
+		eye = new Foreground(null, 9998, true,0);
 		option = 0;
 	}
 
@@ -28,8 +28,8 @@ public class MainMenu implements Runnable {
 		synchronized (RenderableHolder.getInstance()) {
 			RenderableHolder.getInstance().getRenderableList().remove(bg);
 		}
-		bg = new Background(null, 9999);
-		select = new Foreground(null, 9999 + option, false);
+		bg = new Background(null, 9999, 0);
+		select = new Foreground(null, 9999 + option, false,0);
 	}
 
 	public void start() {
@@ -38,19 +38,32 @@ public class MainMenu implements Runnable {
 			// level 1
 			RenderableHolder.getInstance().getRenderableList().remove(bg);
 			RenderableHolder.getInstance().getRenderableList().remove(select);
-			System.out.println("Remove select " + select.toString());
 			select = null;
 			RenderableHolder.getInstance().getRenderableList().remove(eye);
 		}
 		Player player1 = new Player(0, 5, 0);
 		Thread p1 = new Thread(player1);
-		new Background(player1, 1);
-		new Foreground(player1, 1, false);
-		Monster m1 = new Monster(0,0,1,1);
+		new Background(player1, 1, 1);
+		new Foreground(player1, 1, false,0);
+		Monster m1 = new Monster(0,1,1,1,player1);
 		p1.start();
 		start = true;
 	}
-
+	
+	public void cont(){
+		synchronized (RenderableHolder.getInstance()) {
+			// level 1
+			RenderableHolder.getInstance().getRenderableList().remove(bg);
+			RenderableHolder.getInstance().getRenderableList().remove(select);
+			select = null;
+			RenderableHolder.getInstance().getRenderableList().remove(eye);
+		}
+		Map m = new Map(1);
+		Thread map = new Thread(m);
+		map.start();
+		start = true;
+	}
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -114,6 +127,9 @@ public class MainMenu implements Runnable {
 					case 0:
 						start();
 						break;
+					case 1:
+						cont();
+						break;
 					case 3:
 						System.exit(0);
 					}
@@ -123,12 +139,11 @@ public class MainMenu implements Runnable {
 			synchronized (RenderableHolder.getInstance()) {
 				if (update) {
 					RenderableHolder.getInstance().getRenderableList().remove(select);
-					select = new Foreground(null, 9999 + option, false);
+					select = new Foreground(null, 9999 + option, false,0);
 				}	
 			}
 			GameScreen.getGamescreen().repaint();
 			if (start)
-
 				break;
 		}
 	}
