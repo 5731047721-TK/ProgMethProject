@@ -112,7 +112,7 @@ public abstract class Character {
 
 	public abstract void hit();
 
-	public abstract void hurt();
+	public abstract void hurt(boolean facing);
 
 	public abstract void die();
 

@@ -27,13 +27,18 @@ public class Player extends Character implements IRenderable, Runnable {
 	private boolean visible;
 	private boolean playing;
 	private boolean hitting;
-	
+	private boolean hurting;
+	private int invTime; // 200
+	private int fadeDelayCount;
+	private int fadeDelay; // 10;
+	protected int lowerBoundX;
+	protected int upperBoundX;
 
 	private boolean facing;
-	
+
 	private boolean die;
-	
-	public Player(int speed) throws InvalidValueException{
+
+	public Player(int speed) throws InvalidValueException {
 		super();
 		if (speed < 0) {
 			throw new InvalidValueException(1);
@@ -41,15 +46,20 @@ public class Player extends Character implements IRenderable, Runnable {
 			this.speed = speed;
 		}
 		this.hp = Data.MAX_HP;
+		this.invTime = 0;
+		this.fadeDelay = 10;
+		this.fadeDelayCount = this.fadeDelay;
 		// this.gender = gender;
 		this.playing = true;
 		this.visible = true;
-		this.jumpSpeed = 15;
+		this.jumpSpeed = 17;
 		this.jumpTime = 0;
 		this.onGround = true;
 		this.facing = true;
 		RenderableHolder.getInstance().add(this);
 		start(0);
+		this.lowerBoundX = 0;
+		this.upperBoundX = Data.levelExtent;
 		this.frameCount = 8;
 		this.frameDelay = 2;
 		this.currentFrame = 0;
@@ -64,7 +74,7 @@ public class Player extends Character implements IRenderable, Runnable {
 			pDie = ImageIO.read(loader.getResource("src/player/char2_6.png"));
 			frameWidth = pWalk.getWidth() / 8;
 			frameHeight = pWalk.getHeight();
-//			System.out.println("The image are loaded");
+			// System.out.println("The image are loaded");
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("The image can't be loaded");
@@ -72,6 +82,7 @@ public class Player extends Character implements IRenderable, Runnable {
 			pWalk = null;
 			pJump = null;
 			pHit1 = null;
+			
 			pHit2 = null;
 			pDie = null;
 		}
@@ -102,11 +113,11 @@ public class Player extends Character implements IRenderable, Runnable {
 
 		}
 	}
-	
+
 	public boolean isHitting() {
 		return hitting;
 	}
-	
+
 	public boolean isFacing() {
 		return facing;
 	}
@@ -161,17 +172,36 @@ public class Player extends Character implements IRenderable, Runnable {
 	}
 
 	@Override
-	public void hurt() {
+	public void hurt(boolean facing) {
 		// TODO Auto-generated method stub
-		hp--;
-		if (hp <= 0)
-			die();
+		if (!hurting && invTime == 0) {
+			// System.out.println("hurt " + hp);
+			status = 6;
+			if (facing){
+				this.facing = !facing;
+				speedX = 1;
+			}else{
+				this.facing = !facing;
+				speedX = -1;
+			}hurting = true;
+			hp--;
+			invTime = 100;
+			if (hp <= 0) {
+				/*try {
+					Thread.sleep(750);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+				die();
+			}
+		}
 	}
 
 	@Override
 	public void die() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -239,10 +269,10 @@ public class Player extends Character implements IRenderable, Runnable {
 		currentFrame++;
 		if (currentFrame == frameCount) {
 			stop();
-			
+
 			if (hitting) {
 				int i = 100;
-				
+
 				hitting = false;
 			}
 
@@ -270,6 +300,12 @@ public class Player extends Character implements IRenderable, Runnable {
 		return 0;
 	}
 
+	@Override
+	public void setX(int x) {
+		if (x >= lowerBoundX && x <= upperBoundX)
+			this.x = x;
+	}
+
 	public AffineTransformOp getOp() {
 		AffineTransform tran = AffineTransform.getTranslateInstance(frameWidth, 0);
 		AffineTransform flip = AffineTransform.getScaleInstance(-1d, 1d);
@@ -283,12 +319,12 @@ public class Player extends Character implements IRenderable, Runnable {
 		AffineTransformOp op = null;
 		int levelExtentX = Data.levelExtent;
 		int drawX = 0;
-		if (x <= Data.screenWidth/3){
+		if (x <= Data.screenWidth / 3) {
 			drawX = x - (frameWidth / 2);
-		}else if (x > levelExtentX - 2*Data.screenWidth/3){
-		    drawX = x - levelExtentX + Data.screenWidth - (frameWidth / 2);
-		}else{
-			drawX = Data.screenWidth/3 - frameWidth/2;
+		} else if (x > levelExtentX - 2 * Data.screenWidth / 3) {
+			drawX = x - levelExtentX + Data.screenWidth - (frameWidth / 2);
+		} else {
+			drawX = Data.screenWidth / 3 - frameWidth / 2;
 		}
 		if (!facing) {
 			op = getOp();
@@ -324,21 +360,21 @@ public class Player extends Character implements IRenderable, Runnable {
 			break;
 		case 4: // hit1
 
-//			if (facing) {
-//				op = getOp();
-//			} else
-//				op = null;
-			g2.drawImage(
-					pHit1.getSubimage(currentFrame * pHit1.getWidth() / 8, 0, pHit1.getWidth() / 8, pHit2.getHeight()),
-					op,drawX, y - (pHit1.getHeight() / 2));
-			break;
+			// if (facing) {
+			// op = getOp();
+			// } else
+			// op = null;
+//			g2.drawImage(
+//					pHit1.getSubimage(currentFrame * pHit1.getWidth() / 8, 0, pHit1.getWidth() / 8, pHit2.getHeight()),
+//					op, drawX, y - (pHit1.getHeight() / 2));
+//			break;
 		case 5: // hit1
 			// System.out.println("Draw " + currentFrame);
 			g2.drawImage(
 					pHit1.getSubimage(currentFrame * pHit1.getWidth() / 8, 0, pHit1.getWidth() / 8, pHit1.getHeight()),
 					op, drawX, y - (pHit1.getHeight() / 2));
 			break;
-		case 100: // die
+		case 6: // die
 			g2.drawImage(pDie, op, drawX, y - (pDie.getHeight() / 2));
 			break;
 		}
@@ -356,26 +392,44 @@ public class Player extends Character implements IRenderable, Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			synchronized (instance) {
-				if (instance.getKeytriggered(KeyEvent.VK_Z)) {
-					if (this.isOnGround())
-						this.hit();
-					else
-						this.jumpHit();
+			if(invTime > 0){
+				if(fadeDelayCount > 0)
+					fadeDelayCount--;
+				else{
+					fadeDelayCount = fadeDelay;
+					if(fade == 1f)
+						fade = 0.5f;
+					else if(fade == 0.5f)
+						fade = 1f;
 				}
-				if (instance.getKeypressed(KeyEvent.VK_RIGHT)) {
-					this.walk(true);
-				} else if (instance.getKeypressed(KeyEvent.VK_LEFT)) {
-					this.walk(false);
-				} else if (this.getStatus() != 2 && this.getStatus() != 3) {
-					this.stand();
-				}
-				if (instance.getKeytriggered(KeyEvent.VK_SPACE) && this.getStatus() != 3) {
-					this.jump();
+				if(invTime < 60)
+					hurting = false;
+				invTime--;
+			}else{
+				fade = 1f;
+			}
+			if(!hurting){
+				synchronized (instance) {
+					if (instance.getKeytriggered(KeyEvent.VK_Z)) {
+						if (this.isOnGround())
+							this.hit();
+						else
+							this.jumpHit();
+					}
+					if (instance.getKeypressed(KeyEvent.VK_RIGHT)) {
+						this.walk(true);
+					} else if (instance.getKeypressed(KeyEvent.VK_LEFT)) {
+						this.walk(false);
+					} else if (this.getStatus() != 2 && this.getStatus() != 3) {
+						this.stand();
+					}
+					if (instance.getKeytriggered(KeyEvent.VK_SPACE) && this.getStatus() != 3) {
+						this.jump();
+					}
 				}
 			}
-			if(die){
-				
+			if (die) {
+
 			}
 			instance.postUpdate();
 			this.updateAnimation();

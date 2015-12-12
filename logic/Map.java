@@ -35,8 +35,8 @@ public class Map implements Runnable{
 		}
 		Monster m[] = new Monster[20];
 		Thread mt[] = new Thread[20];
-		for(int i =0;i<20;i++){
-			int ran = (int) (Math.random() * 100 % 4 + 1);
+		for(int i =0;i<1;i++){
+			int ran = (int) (Math.random() * 100 % 1 + 1);
 			m[i] = new Monster(ran, p1);
 			mt[i] = new Thread(m[i]);
 			mt[i].start();
