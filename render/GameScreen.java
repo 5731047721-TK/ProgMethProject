@@ -83,6 +83,10 @@ public class GameScreen extends JComponent {
 					g2d.setComposite((AlphaComposite.getInstance(AlphaComposite.SRC_OVER, ((Monster)entity).getFade())));
 				else if (entity instanceof Foreground && ((Foreground) entity).fadable)
 					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+				else if(entity instanceof Background)
+					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, ((Background)entity).getFade()));
+				else if(entity instanceof Foreground)
+					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, ((Foreground)entity).getFade()));
 				else
 					g2d.setComposite(AlphaComposite.SrcOver.derive(1f));
 				if (entity.isVisible())

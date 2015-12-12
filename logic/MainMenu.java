@@ -2,6 +2,7 @@ package logic;
 
 import java.awt.event.KeyEvent;
 
+import exception.InvalidValueException;
 import input.InputUtility;
 import render.Background;
 import render.Foreground;
@@ -41,12 +42,20 @@ public class MainMenu implements Runnable {
 			select = null;
 			RenderableHolder.getInstance().getRenderableList().remove(eye);
 		}
-		Player player1 = new Player(0, 5, 0);
-		Thread p1 = new Thread(player1);
-		new Background(player1, 1, 1);
-		new Foreground(player1, 1, false,0);
-		Monster m1 = new Monster(0,1,1,player1);
-		p1.start();
+		Player player1;
+		try {
+			player1 = new Player(5);
+			Thread p1 = new Thread(player1);
+			new Background(player1, 1, 1);
+			new Foreground(player1, 1, false,0);
+			Monster m1 = new Monster(1,player1);
+			p1.start();
+		} catch (InvalidValueException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		start = true;
 	}
 	
@@ -58,9 +67,16 @@ public class MainMenu implements Runnable {
 			select = null;
 			RenderableHolder.getInstance().getRenderableList().remove(eye);
 		}
-		Map m = new Map(1);
-		Thread map = new Thread(m);
-		map.start();
+		Map m;
+		try {
+			m = new Map(1);
+			Thread map = new Thread(m);
+			map.start();
+		} catch (InvalidValueException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		start = true;
 	}
 	

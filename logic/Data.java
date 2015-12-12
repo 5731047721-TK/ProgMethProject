@@ -5,11 +5,15 @@ public class Data {
 	public static final int GRAVITY = -15;
 	public static final int screenWidth = 1024;
 	public static final int screenHeight = 480;
-	public static final int levelExtent = 4*1555;
-	public static final int foregroundWidth = 1555;
+	public static final int foregroundWidth = 1500;
+	public static final int levelExtent = 4*1500;
 	public static final int hpInit[] = {253,415};
 	public static final int furyInit[] = {253,446};
-	public static final int[] hpMon = {2,2,2,3,100};
+	public static final int totalMon = 4;
+	public static final int[] hpMon = {2,2,3,4};
+	public static final int[] speedMon = {1,2,1,1};
+	public static final int[] offsetMon = {0,0,10,0};
+	public static final int[] sizeMon = {150,200,150,200,150,250,0,0,0,350};
 	//will be changed when actual sprite done
 	public static final int frameCountMaleWalk = 4;
 	public static final int frameCountMaleHit = 4;

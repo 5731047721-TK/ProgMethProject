@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import exception.InvalidValueException;
 import input.InputUtility;
 import render.GameScreen;
 import render.IRenderable;
@@ -32,8 +33,13 @@ public class Player extends Character implements IRenderable, Runnable {
 	
 	private boolean die;
 	
-	public Player(int status, int speed, int gender) {
-		super(status, speed);
+	public Player(int speed) throws InvalidValueException{
+		super();
+		if (speed < 0) {
+			throw new InvalidValueException(1);
+		} else {
+			this.speed = speed;
+		}
 		this.hp = Data.MAX_HP;
 		// this.gender = gender;
 		this.playing = true;
@@ -233,7 +239,10 @@ public class Player extends Character implements IRenderable, Runnable {
 		currentFrame++;
 		if (currentFrame == frameCount) {
 			stop();
+			
 			if (hitting) {
+				int i = 100;
+				
 				hitting = false;
 			}
 
@@ -313,15 +322,15 @@ public class Player extends Character implements IRenderable, Runnable {
 					pJump.getSubimage(currentFrame * pJump.getWidth() / 8, 0, pJump.getWidth() / 8, pJump.getHeight()),
 					op, drawX, y - (pJump.getHeight() / 2));
 			break;
-		case 4: // hit2
+		case 4: // hit1
 
-			if (facing) {
-				op = getOp();
-			} else
-				op = null;
+//			if (facing) {
+//				op = getOp();
+//			} else
+//				op = null;
 			g2.drawImage(
-					pHit2.getSubimage(currentFrame * pHit2.getWidth() / 8, 0, pHit2.getWidth() / 8, pHit2.getHeight()),
-					op,drawX, y - (pHit2.getHeight() / 2));
+					pHit1.getSubimage(currentFrame * pHit1.getWidth() / 8, 0, pHit1.getWidth() / 8, pHit2.getHeight()),
+					op,drawX, y - (pHit1.getHeight() / 2));
 			break;
 		case 5: // hit1
 			// System.out.println("Draw " + currentFrame);

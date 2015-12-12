@@ -1,7 +1,8 @@
 package logic;
 
+import exception.InvalidValueException;
 
-public abstract class Character{
+public abstract class Character {
 	protected int status;
 	protected int x;
 	protected int y;
@@ -12,17 +13,17 @@ public abstract class Character{
 	protected int speed;
 	protected int speedX;
 	protected int speedY;
-	protected int frameWidth,frameHeight;
-	protected int currentFrame,frameDelayCount;
-	protected int frameCount,frameDelay;
+	protected int frameWidth, frameHeight;
+	protected int currentFrame, frameDelayCount;
+	protected int frameCount, frameDelay;
 	protected float fade;
-	
-	public Character(int status,int speed){
-		this.status = status;
-		this.speed = speed;
+
+	public Character() throws InvalidValueException {
+		this.status = 0;
 		this.fade = 1f;
-		
+
 	}
+
 	public float getFade() {
 		return fade;
 	}
@@ -46,9 +47,7 @@ public abstract class Character{
 	public void setGround(int ground) {
 		this.ground = ground;
 	}
-	
-	
-	
+
 	public int getStatus() {
 		return status;
 	}
@@ -64,7 +63,7 @@ public abstract class Character{
 	}
 
 	public void setX(int x) {
-		if(x >= 0 && x <= Data.levelExtent) 
+		if (x >= 0 && x <= Data.levelExtent)
 			this.x = x;
 	}
 
@@ -73,12 +72,12 @@ public abstract class Character{
 	}
 
 	public void setY(int y) {
-		if(y > ground && !onGround){
+		if (y > ground && !onGround) {
 			onGround = true;
-//			status = 0;
+			// status = 0;
 			y = ground;
 		}
-		if(y >=0 && y <= ground ){
+		if (y >= 0 && y <= ground) {
 			this.y = y;
 		}
 	}
@@ -108,11 +107,18 @@ public abstract class Character{
 	}
 
 	public abstract void walk(boolean way);
+
 	public abstract void stand();
+
 	public abstract void hit();
+
 	public abstract void hurt();
+
 	public abstract void die();
+
 	public abstract void jump();
+
 	public abstract void fall();
+
 	public abstract void updatePosition();
 }

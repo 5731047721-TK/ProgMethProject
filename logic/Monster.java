@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+import exception.InvalidValueException;
 import render.IRenderable;
 import render.RenderableHolder;
 
@@ -29,15 +30,22 @@ public class Monster extends Character implements IRenderable, Runnable {
 	private Image mHit[] = new Image[2];
 	private Image mDie;
 
-	public Monster(int status, int speed, int no, Player player) {
-		super(status, speed);
+	public Monster(int no, Player player) throws InvalidValueException{
+		super();
+		if(no <= 0 || no > Data.totalMon)
+			throw new InvalidValueException(0);
+		if (speed < 0) {
+			throw new InvalidValueException(1);
+		} else {
+			this.speed = Data.speedMon[no-1];
+		}
 		this.no = no;
-		this.hp = Data.hpMon[this.no];
+		this.hp = Data.hpMon[this.no-1];
 		actionDelay = 100;
 		actionDelayCount = actionDelay;
 		this.x = (int) (Math.random() * 1000) + 300 + 1555 * (no - 1);
 		// System.out.println(x);
-		this.y = 300;
+		this.y = 300 + Data.offsetMon[no-1];
 		this.visible = true;
 		this.player = player;
 		this.facing = false;
@@ -94,7 +102,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 	@Override
 	public void hit() {
 		// TODO Auto-generated method stub
-		if (!hurting) {
+		if (!hurting && !hitting) {
 			speedX = 0;
 			hitting = true;
 			player.hurt();
@@ -106,7 +114,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 		// TODO Auto-generated method stub
 
 		if (!hurting) {
-			System.out.println("hurt " + hp);
+//			System.out.println("hurt " + hp);
 			if (facing)
 				speedX = -1;
 			else
@@ -216,7 +224,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 				e.printStackTrace();
 			}
 
-			if (!chasing) {
+			if (!chasing && !hitting && !hurting) {
 				if (actionDelayCount > 0)
 					actionDelayCount--;
 				else {
@@ -234,9 +242,10 @@ public class Monster extends Character implements IRenderable, Runnable {
 				}
 			}
 //			System.out.println(Math.abs(x - player.getX() - 25));
-			if (Math.abs(x - player.getX()) < 50) {
+			if (!hitting && Math.abs(x - player.getX()) < 60) {
 				hit();
-			} else if (!hurting && Math.abs(x - player.getX()) < 200) {
+			} else if (!hurting && Math.abs(x - player.getX()) < 200 && Math.abs(x - player.getX()) >= 60) {
+				hitting = false;
 				if (x > player.getX()) {
 					speedX = -speed;
 					facing = false;
@@ -249,9 +258,9 @@ public class Monster extends Character implements IRenderable, Runnable {
 				chasing = false;
 			}
 			if (player.isHitting()) {
-				if (player.isFacing() && Math.abs(x - player.getX() - 25) < 25 && Math.abs(y - player.getY()) < 50)
+				if (player.isFacing() && Math.abs(x - player.getX() - 40) < 25 && Math.abs(y - player.getY()) < 50)
 					hurt();
-				else if (!player.isFacing() && Math.abs(player.getX() - 25 - x) < 25
+				else if (!player.isFacing() && Math.abs(player.getX() - 40 - x) < 25
 						&& Math.abs(y - player.getY()) < 50)
 					hurt();
 			} else {
@@ -264,7 +273,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 		}
 		while(fade > 0.01){
 			try {
-				Thread.sleep(20);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

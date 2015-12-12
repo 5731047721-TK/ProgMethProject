@@ -14,12 +14,14 @@ public class Foreground implements IRenderable{
 	private Player player;
 	public boolean fadable;
 	private int offset;
+	private float fade;
 	public Foreground(Player player,int map,boolean fadable,int offset) {
 		super();
 		visible = true;
 		this.fadable = fadable;
 		this.player = player;
 		this.offset = offset;
+		this.fade = 1f;
 		try{
 			ClassLoader loader = Player.class.getClassLoader();
 			fg = ImageIO.read(loader.getResource("src/background/lv"+map+"_fg.png"));
@@ -32,6 +34,22 @@ public class Foreground implements IRenderable{
 
 	
 	
+	public float getFade() {
+		return fade;
+	}
+
+
+
+	public void setFade(float fade) {
+		if (fade > 1)
+			this.fade = 1;
+		else if (fade < 0)
+			this.fade = 0;
+		this.fade = fade;
+	}
+
+
+
 	@Override
 	public boolean isVisible() {
 		// TODO Auto-generated method stub

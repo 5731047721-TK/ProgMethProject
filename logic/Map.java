@@ -2,6 +2,7 @@ package logic;
 
 import java.awt.Graphics2D;
 
+import exception.InvalidValueException;
 import render.Background;
 import render.Foreground;
 import render.IRenderable;
@@ -11,65 +12,44 @@ public class Map implements Runnable{
 	private int map[][];
 	private Player p1;
 	private int no;
-	private Background bg;
-	private Foreground fg,fg2,fg3;
+	private Background bg[];
+	private Foreground fg[];
 	private Foreground intf;
 	private int screenX;
 	private int DelaySpawnMon;
 	private int DelaySpawnCount;
-	public Map(int level){
-		p1 = new Player(0, 5, 0);
+	public Map(int level) throws InvalidValueException{
+		p1 = new Player(5);
 		Thread player = new Thread(p1);
 		DelaySpawnMon = 200/level;
 		DelaySpawnCount = DelaySpawnMon;
 		no = 1;
-		bg = new Background(p1, 1, no);
+		bg = new Background[4];
+		for(int i=0;i<bg.length;i++){
+			bg[i] = new Background(p1, 1, i+1);
+		}
 		intf = new Foreground(null, 7777, false, 0);
-		fg = new Foreground(p1, 1, false,no-1);
-		fg2 = new Foreground(p1, 1, false,no);
-		
-		Monster m1 = new Monster(0,1,1,p1);
-		Monster m2 = new Monster(0,2,2,p1);
-		Monster m3 = new Monster(0,1,3,p1);
-		Thread mon1 = new Thread(m1);
-		Thread mon2 = new Thread(m2);
-		Thread mon3 = new Thread(m3);
-		mon1.start();
-		mon2.start();
-		mon3.start();
+		fg = new Foreground[4];
+		for(int i =0;i<fg.length;i++){
+			fg[i] = new Foreground(p1, 1, false,i);
+		}
+		Monster m[] = new Monster[20];
+		Thread mt[] = new Thread[20];
+		for(int i =0;i<20;i++){
+			int ran = (int) (Math.random() * 100 % 4 + 1);
+			m[i] = new Monster(ran, p1);
+			mt[i] = new Thread(m[i]);
+			mt[i].start();
+		}
 		player.start();
 		
 	}
 
 	public void mapManagement(){
-		screenX = p1.getX() - (no-1)*Data.foregroundWidth;
-//		System.out.println(screenX);
-		if(screenX > Data.foregroundWidth){
-			synchronized (RenderableHolder.getInstance()) {
-				RenderableHolder.getInstance().getRenderableList().remove(bg);
-				RenderableHolder.getInstance().getRenderableList().remove(fg);
-				RenderableHolder.getInstance().getRenderableList().remove(fg2);
-				RenderableHolder.getInstance().getRenderableList().remove(fg3);
-				no++;
-				bg = new Background(p1, 1, no);
-				fg = new Foreground(p1, 1, false,(no-2));
-				fg2 = new Foreground(p1, 1, false,(no-1));
-				fg3 = new Foreground(p1, 1, false,(no));
-				
-			}	
-		}else if(screenX < 0){
-			synchronized (RenderableHolder.getInstance()) {
-				RenderableHolder.getInstance().getRenderableList().remove(bg);
-				RenderableHolder.getInstance().getRenderableList().remove(fg);
-				RenderableHolder.getInstance().getRenderableList().remove(fg2);
-				RenderableHolder.getInstance().getRenderableList().remove(fg3);
-				no--;
-				bg = new Background(p1, 1, no);
-				fg = new Foreground(p1, 1, false, no-2);
-				fg2 = new Foreground(p1, 1, false,(no-1));
-				fg3 = new Foreground(p1, 1, false,(no));
-			}	
+		for(int i=0; i< bg.length-1;i++){
+			bg[i].setFade((i+1)*Data.foregroundWidth/400f - (float)p1.getX()/400f);	
 		}
+
 		
 	}
 
