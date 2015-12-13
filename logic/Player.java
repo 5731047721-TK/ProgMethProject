@@ -1,5 +1,6 @@
 package logic;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
@@ -20,8 +21,10 @@ public class Player extends Character implements IRenderable, Runnable {
 	private BufferedImage pJump = null;
 	private BufferedImage pHit1 = null;
 	private BufferedImage pHit2 = null;
+	private BufferedImage pHurt = null;
 	private BufferedImage pDie = null;
-
+	private BufferedImage hitEffect = null;
+	public boolean lock;
 	private int hp;
 	// private int gender;
 	private boolean visible;
@@ -31,6 +34,13 @@ public class Player extends Character implements IRenderable, Runnable {
 	private int invTime; // 200
 	private int fadeDelayCount;
 	private int fadeDelay; // 10;
+	private boolean damaging;
+	private int distanceEffect;
+	private int effectX;
+	private int effectY;
+	private boolean effectDir;
+//	private int hitDelay;
+//	private int hitDelayCount;
 	protected int lowerBoundX;
 	protected int upperBoundX;
 
@@ -49,6 +59,10 @@ public class Player extends Character implements IRenderable, Runnable {
 		this.invTime = 0;
 		this.fadeDelay = 10;
 		this.fadeDelayCount = this.fadeDelay;
+		this.effectX = 0;
+		this.effectY = 0;
+//		this.hitDelay = 20;
+//		this.hitDelayCount = hitDelay;
 		// this.gender = gender;
 		this.playing = true;
 		this.visible = true;
@@ -56,35 +70,40 @@ public class Player extends Character implements IRenderable, Runnable {
 		this.jumpTime = 0;
 		this.onGround = true;
 		this.facing = true;
-		RenderableHolder.getInstance().add(this);
+		
 		start(0);
 		this.lowerBoundX = 0;
 		this.upperBoundX = Data.levelExtent;
 		this.frameCount = 8;
-		this.frameDelay = 2;
+		this.frameDelay = 4;
 		this.currentFrame = 0;
 		this.frameDelayCount = 0;
-		try {
-			ClassLoader loader = Player.class.getClassLoader();
-			pStand = ImageIO.read(loader.getResource("src/player/char2_1.png"));
-			pWalk = ImageIO.read(loader.getResource("src/player/char2_2.png"));
-			pJump = ImageIO.read(loader.getResource("src/player/char2_3.png"));
-			pHit1 = ImageIO.read(loader.getResource("src/player/char2_4.png"));
-			pHit2 = ImageIO.read(loader.getResource("src/player/char2_5.png"));
-			pDie = ImageIO.read(loader.getResource("src/player/char2_6.png"));
-			frameWidth = pWalk.getWidth() / 8;
-			frameHeight = pWalk.getHeight();
-			// System.out.println("The image are loaded");
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("The image can't be loaded");
-			pStand = null;
-			pWalk = null;
-			pJump = null;
-			pHit1 = null;
-			
-			pHit2 = null;
-			pDie = null;
+		synchronized (RenderableHolder.getInstance()) {
+			RenderableHolder.getInstance().add(this);
+			try {
+				ClassLoader loader = Player.class.getClassLoader();
+				pStand = ImageIO.read(loader.getResource("src/player/char2_1.png"));
+				pWalk = ImageIO.read(loader.getResource("src/player/char2_2.png"));
+				pJump = ImageIO.read(loader.getResource("src/player/char2_3.png"));
+				pHit1 = ImageIO.read(loader.getResource("src/player/char2_4.png"));
+				pHit2 = ImageIO.read(loader.getResource("src/player/char2_5.png"));
+				pHurt = ImageIO.read(loader.getResource("src/player/char2_6.png"));
+				pDie = ImageIO.read(loader.getResource("src/player/char2_7.png"));
+				hitEffect = ImageIO.read(loader.getResource("src/player/effect.png"));
+				frameWidth = pWalk.getWidth() / 8;
+				frameHeight = pWalk.getHeight();
+				// System.out.println("The image are loaded");
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("The image can't be loaded");
+				pStand = null;
+				pWalk = null;
+				pJump = null;
+				pHit1 = null;
+				pHit2 = null;
+				pHurt = null;
+				pDie = null;
+			}
 		}
 		// debug
 
@@ -102,16 +121,6 @@ public class Player extends Character implements IRenderable, Runnable {
 
 		}
 		this.ground = this.y;
-	}
-
-	public void animation(Graphics2D g2, String animate) {
-		if (animate.equalsIgnoreCase("walk")) {
-
-		} else if (animate.equalsIgnoreCase("hit")) {
-
-		} else if (animate.equalsIgnoreCase("jump")) {
-
-		}
 	}
 
 	public boolean isHitting() {
@@ -145,6 +154,8 @@ public class Player extends Character implements IRenderable, Runnable {
 		if (!hitting) {
 			speedX = 0;
 			status = 0;
+		}else{
+			speedX = 0;
 		}
 	}
 
@@ -159,6 +170,17 @@ public class Player extends Character implements IRenderable, Runnable {
 		}
 		hitting = true;
 		status = 4;
+//		if (!hurting) {
+//			speedX = 0;
+//			hitting = true;
+//			status = 4;
+//			if (hitDelayCount > 0) {
+//				hitDelayCount--;
+//				return;
+//			}
+//			hitDelayCount = hitDelay;
+//			// hitting = true;
+//		}
 	}
 
 	public void jumpHit() {
@@ -171,6 +193,10 @@ public class Player extends Character implements IRenderable, Runnable {
 		status = 5;
 	}
 
+	public boolean isDamaging(){
+		return damaging;
+	}
+	
 	@Override
 	public void hurt(boolean facing) {
 		// TODO Auto-generated method stub
@@ -264,15 +290,19 @@ public class Player extends Character implements IRenderable, Runnable {
 			frameDelayCount--;
 			return;
 		}
-
+		if(currentFrame == frameCount/2 && hitting){
+			damaging = true;
+			effectDir = facing;
+			effectX = x;
+			effectY = y;
+		}
 		frameDelayCount = frameDelay;
-		currentFrame++;
-		if (currentFrame == frameCount) {
+		currentFrame++; 
+		if (currentFrame  == frameCount) {
 			stop();
 
 			if (hitting) {
-				int i = 100;
-
+				damaging = false;
 				hitting = false;
 			}
 
@@ -314,10 +344,10 @@ public class Player extends Character implements IRenderable, Runnable {
 		return op;
 	}
 
-	@Override
-	public void render(Graphics2D g2) {
-		AffineTransformOp op = null;
+	public int getDrawX(int x){
 		int levelExtentX = Data.levelExtent;
+		if(lock)
+			return x - frameWidth/2 - (Data.levelExtent - Data.screenWidth);
 		int drawX = 0;
 		if (x <= Data.screenWidth / 3) {
 			drawX = x - (frameWidth / 2);
@@ -326,6 +356,14 @@ public class Player extends Character implements IRenderable, Runnable {
 		} else {
 			drawX = Data.screenWidth / 3 - frameWidth / 2;
 		}
+		
+		return drawX;
+	}
+	
+	@Override
+	public void render(Graphics2D g2) {
+		AffineTransformOp op = null;
+		int drawX = getDrawX(x);
 		if (!facing) {
 			op = getOp();
 		}
@@ -374,10 +412,19 @@ public class Player extends Character implements IRenderable, Runnable {
 					pHit1.getSubimage(currentFrame * pHit1.getWidth() / 8, 0, pHit1.getWidth() / 8, pHit1.getHeight()),
 					op, drawX, y - (pHit1.getHeight() / 2));
 			break;
-		case 6: // die
-			g2.drawImage(pDie, op, drawX, y - (pDie.getHeight() / 2));
+		case 6: // hurt
+			g2.drawImage(pHurt, op, drawX, y - (pHurt.getHeight() / 2));
 			break;
+		case 7: // die
+			g2.drawImage(pDie, op, drawX, y-(pDie.getHeight()/2));
 		}
+		if(damaging){
+//			System.out.println(effectDir);
+			g2.setComposite((AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f - distanceEffect/100f)));
+			g2.drawImage(hitEffect, (effectDir)?null:getOp(), getDrawX(effectX) + ((effectDir)?60+distanceEffect:-60-distanceEffect), effectY - hitEffect.getHeight()/2 + 20);
+			g2.setComposite(AlphaComposite.SrcOver.derive(1f));
+		}
+				
 	}
 
 	@Override
@@ -391,6 +438,11 @@ public class Player extends Character implements IRenderable, Runnable {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			if(damaging){
+				distanceEffect +=5;
+			}else{
+				distanceEffect = 0;
 			}
 			if(invTime > 0){
 				if(fadeDelayCount > 0)
@@ -426,16 +478,24 @@ public class Player extends Character implements IRenderable, Runnable {
 					if (instance.getKeytriggered(KeyEvent.VK_SPACE) && this.getStatus() != 3) {
 						this.jump();
 					}
+					instance.postUpdate();
 				}
 			}
 			if (die) {
 
 			}
-			instance.postUpdate();
 			this.updateAnimation();
 			this.updatePosition();
 			GameScreen.getGamescreen().repaint();
-
+			synchronized (instance) {
+				if(Data.pause)
+					try {
+						this.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
 		}
 	}
 }

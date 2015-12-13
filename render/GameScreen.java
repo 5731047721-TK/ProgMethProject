@@ -55,6 +55,14 @@ public class GameScreen extends JComponent {
 					if (e.getKeyCode() >= 0 && e.getKeyCode() <= 255 && !instance.getKeypressed(e.getKeyCode())) {
 						instance.setKeypressed(e.getKeyCode(), true);
 						instance.setKeytriggered(e.getKeyCode(), true);
+						if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+							if(Data.pause){
+								Data.pause = false;
+								notifyAll();
+							}
+							else
+								Data.pause = true;
+						}
 					}
 				}
 			}
@@ -74,20 +82,22 @@ public class GameScreen extends JComponent {
 		opacity += 0.01 * direction;
 		if (opacity >= 0.999 || opacity <= 0.001)
 			direction *= -1;
-		// System.out.println(opacity);
+//		System.out.println(RenderableHolder.getInstance().getRenderableList().toString());
 		synchronized (RenderableHolder.getInstance()) {
 			for (IRenderable entity : RenderableHolder.getInstance().getRenderableList()) {
-				if(entity instanceof Player)
+				if(entity instanceof Player){
 					g2d.setComposite((AlphaComposite.getInstance(AlphaComposite.SRC_OVER, ((Player)entity).getFade())));
-				else if(entity instanceof Monster)
+				}else if(entity instanceof Monster){
 					g2d.setComposite((AlphaComposite.getInstance(AlphaComposite.SRC_OVER, ((Monster)entity).getFade())));
-				else if (entity instanceof Foreground && ((Foreground) entity).fadable)
+				}else if (entity instanceof Foreground && ((Foreground) entity).fadable)
 					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 				else if(entity instanceof Background)
 					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, ((Background)entity).getFade()));
 				else if(entity instanceof Foreground)
 					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, ((Foreground)entity).getFade()));
-				else
+				else if(entity instanceof Title){
+					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, ((Title)entity).getFade()));
+				}else
 					g2d.setComposite(AlphaComposite.SrcOver.derive(1f));
 				if (entity.isVisible())
 					entity.render(g2d);

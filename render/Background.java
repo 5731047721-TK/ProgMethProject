@@ -1,5 +1,6 @@
 package render;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
@@ -14,11 +15,16 @@ public class Background implements IRenderable {
 	private Player player;
 	private float fade;
 	private int no;
-
+	private int map;
+	public boolean lock;
 	public Background(Player player, int map, int no) {
 		super();
 		this.no = no - 1;
-		setFade(1f);
+		this.map = map;
+		if(map == 0)
+			setFade(0f);
+		else
+			setFade(1f);
 		visible = true;
 		this.player = player;
 		try {
@@ -29,7 +35,9 @@ public class Background implements IRenderable {
 			e.printStackTrace();
 			bg = null;
 		}
-		RenderableHolder.getInstance().add(this);
+		synchronized (RenderableHolder.getInstance()) {
+			RenderableHolder.getInstance().add(this);
+		}
 	}
 
 	public float getFade() {
@@ -37,14 +45,15 @@ public class Background implements IRenderable {
 	}
 
 	public void setFade(float fade) {
-		if (fade > 1)
-			this.fade = 1;
-		else if (fade < 0)
-			this.fade = 0;
+		if (fade >= 1)
+			this.fade = 1f;
+		else if (fade <= 0)
+			this.fade = 0f;
 		else
 			this.fade = fade;
 	}
-
+	
+	
 	@Override
 	public boolean isVisible() {
 		// TODO Auto-generated method stub
@@ -54,6 +63,7 @@ public class Background implements IRenderable {
 	@Override
 	public int getZ() {
 		// TODO Auto-generated method stub
+		if(map == 0) return Integer.MAX_VALUE; 
 		return -1000000 - no;
 	}
 
@@ -72,6 +82,8 @@ public class Background implements IRenderable {
 			else if (player.getX() > levelExtentX - 2 * Data.screenWidth / 3)
 				scrollX = -(levelExtentX - Data.screenWidth) / 8;
 		}
+		if(lock)
+			scrollX = -(Data.levelExtent - Data.screenWidth)/8;
 		// System.out.println(no);
 		if (no < 0)
 			g2.drawImage(bg, null, scrollX, 0);

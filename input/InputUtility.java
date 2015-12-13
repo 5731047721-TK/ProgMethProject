@@ -30,8 +30,9 @@ public class InputUtility {
 	}
 	
 	public synchronized void setKeytriggered(int key,boolean pressed) {
-		if(key >=0 && key <= 255)
+		if(key >=0 && key <= 255){
 			keytriggered[key] = pressed;
+		}
 	}
 
 	public synchronized void postUpdate(){

@@ -15,6 +15,7 @@ public class Foreground implements IRenderable{
 	public boolean fadable;
 	private int offset;
 	private float fade;
+	public boolean lock;
 	public Foreground(Player player,int map,boolean fadable,int offset) {
 		super();
 		visible = true;
@@ -29,7 +30,10 @@ public class Foreground implements IRenderable{
 			e.printStackTrace();
 			fg = null;
 		}
-		RenderableHolder.getInstance().add(this);
+		synchronized (RenderableHolder.getInstance()) {
+			RenderableHolder.getInstance().add(this);
+		}
+		
 	}
 
 	
@@ -78,6 +82,8 @@ public class Foreground implements IRenderable{
 		else if (player.getX() > levelExtentX - 2*Data.screenWidth/3)
 		    scrollX = -(levelExtentX - Data.screenWidth);
 		}
+		if(lock)
+			scrollX = -(Data.levelExtent - Data.screenWidth);
 		g2.drawImage(fg, null, scrollX + Data.foregroundWidth*offset, 0);
 	}
 

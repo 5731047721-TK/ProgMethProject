@@ -9,12 +9,15 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import exception.InvalidValueException;
+import input.InputUtility;
 import render.IRenderable;
 import render.RenderableHolder;
 
 public class Monster extends Character implements IRenderable, Runnable {
 	private int hp;
 	private int no;
+	
+	public boolean lock;
 	private boolean visible;
 	private boolean facing;
 	private boolean hitting;
@@ -46,7 +49,9 @@ public class Monster extends Character implements IRenderable, Runnable {
 		this.hp = Data.hpMon[this.no - 1];
 		actionDelay = 100;
 		actionDelayCount = actionDelay;
-		this.x = (int) (Math.random() * 1000) + 300 + 1555 * (no - 1);
+		this.x = (int) (Math.random() * 1000) + 1555 * (no - 1);
+		this.x%= Data.levelExtent;
+		this.x+= 300;
 		// System.out.println(x);
 		this.y = 300 + Data.offsetMon[no - 1];
 		this.visible = true;
@@ -55,7 +60,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 		this.chasing = false;
 		this.speedX = 0;
 		this.speedY = 0;
-		this.ground = 300;
+		this.ground = 310;
 		// String source = "src/monster/" + this.no + ".png";
 		try {
 			ClassLoader loader = Player.class.getClassLoader();
@@ -84,9 +89,15 @@ public class Monster extends Character implements IRenderable, Runnable {
 			mHurt[1] = null;
 			mDie = null;
 		}
-		RenderableHolder.getInstance().add(this);
+		synchronized (RenderableHolder.getInstance()) {
+			RenderableHolder.getInstance().add(this);
+		}
 	}
 
+	public int getNo() {
+		return no;
+	}
+	
 	@Override
 	public void walk(boolean way) {
 		// TODO Auto-generated method stub
@@ -185,6 +196,8 @@ public class Monster extends Character implements IRenderable, Runnable {
 			else if (player.getX() > levelExtentX - 2 * Data.screenWidth / 3)
 				scrollX = -(levelExtentX - Data.screenWidth);
 		}
+		if(lock)
+			scrollX = -(Data.levelExtent - Data.screenWidth);
 		int f = (facing) ? 1 : 0;
 		// System.out.println(speedX);
 		if (died)
@@ -257,7 +270,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 			 * player.upperBoundX = x-Data.sizeMon[no-1]/2; } }else{
 			 * player.upperBoundX = Data.levelExtent; player.lowerBoundX = 0; }
 			 */
-			if (Math.abs(x - player.getX()) <= 50 && Math.abs(y - player.getY()) <= 60) {
+			if (Math.abs(x - player.getX()) <= Data.sizeMon[no-1]/2 && Math.abs(y - player.getY()) <= Data.sizeMon[no-1]/2) {
 				hit();
 			} else if (!hurting && Math.abs(x - player.getX()) < 200) {
 				if (hitting) {
@@ -285,13 +298,15 @@ public class Monster extends Character implements IRenderable, Runnable {
 				chasing = false;
 			}
 
-			if (player.isHitting()) {
-				System.out.println((player.getX() + 40) + " " + (x - Data.sizeMon[no - 1] / 2));
-				if (player.isFacing() && Math.abs((player.getX() + 40) - (x - Data.sizeMon[no - 1] / 2)) < Data.sizeMon[no-1]/2
-						&& Math.abs(player.getY() - y - Data.sizeMon[no - 1] / 2) < Data.sizeMon[no - 1] / 2)
+			if (player.isDamaging()) {
+//				System.out.println((Math.abs(x - player.getX() - 40)) + " " + Data.sizeMon[no-1]/2);
+				if (player.isFacing()
+						&& (Math.abs(x - player.getX() - 80))  <= Data.sizeMon[no-1]/2
+						&& Math.abs(player.getY() - y) < Data.sizeMon[no - 1]/2)
 					hurt(true);
-				else if (!player.isFacing() && Math.abs((player.getX() - 40) - (x + Data.sizeMon[no - 1] / 2)) < Data.sizeMon[no-1]/2
-						&& Math.abs(y - player.getY()) < Data.sizeMon[no - 1] / 2)
+				else if (!player.isFacing()
+						&& (Math.abs(x - player.getX() + 80))  <= Data.sizeMon[no-1]/2
+						&& Math.abs(y - player.getY()) < Data.sizeMon[no - 1]/2)
 					hurt(true);
 			} else {
 				hurting = false;
@@ -300,6 +315,15 @@ public class Monster extends Character implements IRenderable, Runnable {
 				break;
 			}
 			updatePosition();
+			synchronized (InputUtility.getInstance()) {
+				if(Data.pause)
+					try {
+						this.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
 		}
 		while (fade > 0.01) {
 			try {
