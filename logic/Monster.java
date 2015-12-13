@@ -52,7 +52,9 @@ public class Monster extends Character implements IRenderable, Runnable {
 		this.x = (int) (Math.random() * 1000) + 1555 * (no - 1);
 		this.x%= Data.levelExtent;
 		this.x+= 300;
-		// System.out.println(x);
+		if(no%10 == 0){
+			this.x = Data.levelExtent - 300;
+		}
 		this.y = 300 + Data.offsetMon[no - 1];
 		this.visible = true;
 		this.player = player;
@@ -263,16 +265,9 @@ public class Monster extends Character implements IRenderable, Runnable {
 				}
 			}
 			// check range of player
-			/*
-			 * if(Math.abs(x - player.getX()) < Data.sizeMon[no-1]/2){ if(x <
-			 * player.getX()){ System.out.println("Right"); player.lowerBoundX =
-			 * x+Data.sizeMon[no-1]/2; }else{ System.out.println("Left");
-			 * player.upperBoundX = x-Data.sizeMon[no-1]/2; } }else{
-			 * player.upperBoundX = Data.levelExtent; player.lowerBoundX = 0; }
-			 */
 			if (Math.abs(x - player.getX()) <= Data.sizeMon[no-1]/2 && Math.abs(y - player.getY()) <= Data.sizeMon[no-1]/2) {
 				hit();
-			} else if (!hurting && Math.abs(x - player.getX()) < 200) {
+			} else if (!hurting && Math.abs(x - player.getX()) < Data.chasingRangeMon[no-1]) {
 				if (hitting) {
 					try {
 						Thread.sleep(1000);
@@ -318,7 +313,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 			synchronized (InputUtility.getInstance()) {
 				if(Data.pause)
 					try {
-						this.wait();
+						InputUtility.getInstance().wait();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

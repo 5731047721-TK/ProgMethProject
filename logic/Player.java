@@ -490,7 +490,7 @@ public class Player extends Character implements IRenderable, Runnable {
 			synchronized (instance) {
 				if(Data.pause)
 					try {
-						this.wait();
+						instance.wait();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

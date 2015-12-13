@@ -58,7 +58,7 @@ public class GameScreen extends JComponent {
 						if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
 							if(Data.pause){
 								Data.pause = false;
-								notifyAll();
+								instance.notifyAll();
 							}
 							else
 								Data.pause = true;
