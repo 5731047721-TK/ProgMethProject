@@ -16,6 +16,7 @@ public class Title implements IRenderable, Runnable {
 	private float fade;
 	private Thread prevThread;
 	private int no;
+	private boolean destroyed;
 
 	public Title(int no, Thread prevThread) {
 		super();
@@ -44,6 +45,14 @@ public class Title implements IRenderable, Runnable {
 			this.fade = 0;
 		} else
 			this.fade = fade;
+	}
+	
+	public boolean isDestroyed() {
+		return destroyed;
+	}
+
+	public void setDestroyed(boolean destroyed) {
+		this.destroyed = destroyed;
 	}
 
 	@Override
@@ -110,6 +119,9 @@ public class Title implements IRenderable, Runnable {
 				if(i >= 500)
 					break;
 			}
+			if(destroyed){
+				break;
+			}
 		}
 		while (fade > 0.01) {
 			try {
@@ -120,6 +132,9 @@ public class Title implements IRenderable, Runnable {
 			}
 			fade -= 0.01;
 			GameScreen.getGamescreen().repaint();
+			if(destroyed){
+				break;
+			}
 		}
 		this.visible = false;
 		synchronized (RenderableHolder.getInstance()) {

@@ -1,8 +1,5 @@
 package exception;
 
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -14,7 +11,6 @@ public class InvalidValueException extends Exception {
 		super();
 		// JOptionPane pane;
 		SwingUtilities.invokeLater(new Runnable() {
-
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
@@ -33,6 +29,5 @@ public class InvalidValueException extends Exception {
 				System.exit(0);
 			}
 		});
-
 	}
 }

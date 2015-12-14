@@ -18,6 +18,7 @@ public class Map implements Runnable {
 	private Monster boss;
 	private boolean clear;
 	private boolean bossSpawn;
+	private boolean destroyed;
 	private int no;
 	private Background bg[];
 	private Foreground fg[];
@@ -37,6 +38,18 @@ public class Map implements Runnable {
 		no = 1;
 
 	}
+	
+	public boolean isDestroyed() {
+		return destroyed;
+	}
+
+
+
+	public void setDestroyed(boolean destroyed) {
+		this.destroyed = destroyed;
+	}
+
+
 
 	public void mapManagement() {
 		for (int i = 0; i < bg.length - 1; i++) {
@@ -56,7 +69,7 @@ public class Map implements Runnable {
 			if (!bossSpawn) {
 				try {
 					intf = new Foreground(null, 7775 + 2*level + 1, false, 0);
-					boss = new Monster(10, p1);
+					boss = new Monster(level*10, p1);
 					boss.lock = true;
 					Thread bossThread = new Thread(boss);
 					bossThread.start();
@@ -77,13 +90,24 @@ public class Map implements Runnable {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					RenderableHolder.getInstance().getRenderableList().clear();
+					synchronized(RenderableHolder.getInstance()){
+						for (IRenderable entity : RenderableHolder.getInstance().getRenderableList()) {
+							if(entity instanceof Player)
+								((Player)entity).setDestroyed(true);
+							else if(entity instanceof Monster)
+								((Monster)entity).die();
+						}
+						RenderableHolder.getInstance().getRenderableList().clear();
+					}
 					Map m;
 					try {
 						if(level < 3){
 							m = new Map(level+1, null);
-							Thread map = new Thread(m);
-							map.start();
+							new Thread(m).start();
+							destroyed = true;
+						}else{
+							MainMenu mainMenu = new MainMenu();
+							new Thread(mainMenu).start();
 						}
 					} catch (InvalidValueException e) {
 						// TODO Auto-generated catch block
@@ -103,9 +127,7 @@ public class Map implements Runnable {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				synchronized (RenderableHolder.getInstance()) {
-					RenderableHolder.getInstance().getRenderableList().remove(pause);
-				}
+				pause.setDestroyed(true);
 			}
 		}
 	}
@@ -122,8 +144,7 @@ public class Map implements Runnable {
 			}
 		}
 		Title t = new Title(100 + level, prevThread);
-		Thread tT = new Thread(t);
-		tT.start();
+		new Thread(t).start();
 		try {
 			p1 = new Player(5);
 		} catch (InvalidValueException e1) {
@@ -140,22 +161,37 @@ public class Map implements Runnable {
 		for (int i = 0; i < fg.length; i++) {
 			fg[i] = new Foreground(p1, level, false, i);
 		}
-		m = new Monster[25];
-		Thread mt[] = new Thread[25];
-		for (int i = 0; i < 25; i++) {
-			int ran = (int) (Math.random() * 100 % 8 + 1);
+		if(level<3){
+			m = new Monster[25];
+			Thread mt[] = new Thread[25];
+			for (int i = 0; i < 25; i++) {
+				int ran = (int) (Math.random() * 100 % (8-level) + 1);
+				if(level==2)
+					ran+=10;
+				try {
+					m[i] = new Monster(ran, p1);
+				} catch (InvalidValueException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				mt[i] = new Thread(m[i]);
+				mt[i].start();
+			}
+		}else if(level == 3){
+			m = new Monster[1];
 			try {
-				m[i] = new Monster(ran, p1);
+				m[0] = new Monster(29, p1);
 			} catch (InvalidValueException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			mt[i] = new Thread(m[i]);
-			mt[i].start();
+			new Thread(m[0]).start();
 		}
 		player.start();
 		while (true) {
 			mapManagement();
+			if(destroyed)
+				break;
 		}
 	}
 }

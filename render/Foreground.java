@@ -24,7 +24,7 @@ public class Foreground implements IRenderable{
 		this.offset = offset;
 		this.fade = 1f;
 		try{
-			ClassLoader loader = Player.class.getClassLoader();
+			ClassLoader loader = Foreground.class.getClassLoader();
 			fg = ImageIO.read(loader.getResource("src/background/lv"+map+"_fg.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -85,6 +85,7 @@ public class Foreground implements IRenderable{
 		if(lock)
 			scrollX = -(Data.levelExtent - Data.screenWidth);
 		g2.drawImage(fg, null, scrollX + Data.foregroundWidth*offset, 0);
+		
 	}
 
 }

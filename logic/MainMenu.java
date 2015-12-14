@@ -82,7 +82,6 @@ public class MainMenu implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		start = true;
 	}
 
