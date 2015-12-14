@@ -1,6 +1,10 @@
 package logic;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.event.KeyEvent;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import exception.InvalidValueException;
 import input.InputUtility;
@@ -14,15 +18,18 @@ public class MainMenu implements Runnable {
 	private Background bg;
 	private Foreground eye;
 	private Foreground select;
+	private Thread prevThread;
 	private int option;
 	private boolean start;
+	protected static boolean cont;
 	private boolean update;
-
-	public MainMenu() {
+	private AudioClip mainMusic;
+	private AudioClip storyMusic;
+	
+	public MainMenu(Thread prevThread) {
+		this.prevThread = prevThread;
 		start = false;
 		update = false;
-		bg = new Background(null, 9998, 0);
-		eye = new Foreground(null, 9998, true, 0);
 		option = 0;
 	}
 
@@ -75,7 +82,7 @@ public class MainMenu implements Runnable {
 		}
 		Map m;
 		try {
-			m = new Map(1, null);
+			m = new Map(Data.level, null);
 			Thread map = new Thread(m);
 			map.start();
 		} catch (InvalidValueException e) {
@@ -84,11 +91,55 @@ public class MainMenu implements Runnable {
 		}
 		start = true;
 	}
-
+	
+	public void credit(){
+		synchronized (RenderableHolder.getInstance()) {
+			// level 1
+			RenderableHolder.getInstance().getRenderableList().remove(bg);
+			RenderableHolder.getInstance().getRenderableList().remove(select);
+			select = null;
+			RenderableHolder.getInstance().getRenderableList().remove(eye);
+		}
+		Title credit[] = new Title[3];
+		Thread creditT[] = new Thread[3];
+		for(int i = 0;i<3;i++){
+			if(i==0)
+				credit[i] = new Title(i+10, null);
+			else
+				credit[i] = new Title(i+10, creditT[i-1]);
+			creditT[i] = new Thread(credit[i]);
+			creditT[i].start();
+		}
+		start = true;
+		cont = true;
+		new Thread(new MainMenu(creditT[2])).start();
+	}
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		try {
+			ClassLoader loader = MainMenu.class.getClassLoader();
+			mainMusic = Applet.newAudioClip(loader.getResource("src/sfx/Music/gametitle.wav").toURI().toURL());
+			storyMusic = Applet.newAudioClip(loader.getResource("src/sfx/Music/story.wav").toURI().toURL());
+		} catch (MalformedURLException | URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			mainMusic = null;
+			storyMusic = null;
+		}
+		if (prevThread != null) {
+			try {
+				prevThread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		bg = new Background(null, 9998, 0);
+		eye = new Foreground(null, 9998, true, 0);
 		InputUtility instance = InputUtility.getInstance();
+		mainMusic.loop();
 		while (true) {
 			try {
 				Thread.sleep(20);
@@ -151,6 +202,9 @@ public class MainMenu implements Runnable {
 					case 1:
 						cont();
 						break;
+					case 2:
+						credit();
+						break;
 					case 3:
 						System.exit(0);
 					}
@@ -167,6 +221,18 @@ public class MainMenu implements Runnable {
 			if (start)
 				break;
 		}
+		mainMusic.stop();
+		storyMusic.loop();
+		while(!cont){
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		storyMusic.stop();
+		cont = false;
 	}
 
 }

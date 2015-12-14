@@ -1,7 +1,11 @@
 package logic;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
@@ -21,7 +25,12 @@ public class Monster extends Character implements IRenderable, Runnable {
 	private boolean visible;
 	private boolean facing;
 	private boolean hitting;
-	// private boolean hittingAnimate;
+	private int currentFrame;
+	private int frameCount;
+	private int frameDelay;
+	private int frameDelayCount;
+	private int frameWidth;
+	private boolean playing;
 	private boolean hurting;
 	private boolean died;
 	private Player player;
@@ -34,6 +43,11 @@ public class Monster extends Character implements IRenderable, Runnable {
 	private Image mHurt[] = new Image[2];
 	private Image mHit[] = new Image[2];
 	private Image mDie;
+	private AudioClip aSound;
+	private AudioClip dSound;
+	private AudioClip hSound;
+	
+	private BufferedImage bHit = null;
 
 	public Monster(int no, Player player) throws InvalidValueException {
 		super();
@@ -58,6 +72,8 @@ public class Monster extends Character implements IRenderable, Runnable {
 		this.x %= Data.levelExtent - Data.foregroundWidth;
 		this.x += 800;
 		if (no % 10 == 0) {
+			this.frameCount = Data.bossFrame[no / 10 - 1];
+			this.frameDelay = Data.bossFrameDelay[no / 10 - 1];
 			this.x = Data.levelExtent - 300;
 		}
 		this.y = 300 + Data.offsetMon[no - 1];
@@ -77,6 +93,8 @@ public class Monster extends Character implements IRenderable, Runnable {
 			// + ".GIF"));
 			mStand[0] = new ImageIcon(loader.getResource("src/monster/" + this.no + "_1.GIF")).getImage();
 			mDie = new ImageIcon(loader.getResource("src/monster/" + this.no + "_9.GIF")).getImage();
+			String num = (no<10)?"0"+no:""+no;
+			dSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/"+num+"_d.wav").toURI().toURL());
 			if (no != 29) {
 				mStand[1] = new ImageIcon(loader.getResource("src/monster/" + this.no + "_2.GIF")).getImage();
 				mWalk[0] = new ImageIcon(loader.getResource("src/monster/" + this.no + "_3.GIF")).getImage();
@@ -85,6 +103,12 @@ public class Monster extends Character implements IRenderable, Runnable {
 				mHit[1] = new ImageIcon(loader.getResource("src/monster/" + this.no + "_6.GIF")).getImage();
 				mHurt[0] = new ImageIcon(loader.getResource("src/monster/" + this.no + "_7.GIF")).getImage();
 				mHurt[1] = new ImageIcon(loader.getResource("src/monster/" + this.no + "_8.GIF")).getImage();
+				aSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/"+num+"_a.wav").toURI().toURL());
+				hSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/"+num+"_h.wav").toURI().toURL());
+			}
+			if (no % 10 == 0) {
+				bHit = ImageIO.read(loader.getResource("src/monster/" + no + "_hit.png"));
+				frameWidth = bHit.getWidth() / Data.bossFrame[no / 10 - 1];
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -127,14 +151,24 @@ public class Monster extends Character implements IRenderable, Runnable {
 		// TODO Auto-generated method stub
 		if (!hurting) {
 			speedX = 0;
-			hitting = true;
-			if (hitDelayCount > 0) {
-				hitDelayCount--;
-				return;
+			if (!hitting) {
+				currentFrame = 0;
 			}
-			hitDelayCount = Data.hitDelayMon[no - 1];
-			// hitting = true;
-			player.hurt(facing);
+			hitting = true;
+			if (no % 10 != 0 && no != 29) {
+				if (hitDelayCount > 0) {
+					if(hitDelayCount < 3)
+						aSound.play();
+					hitDelayCount--;
+					return;
+				}
+				hitDelayCount = Data.hitDelayMon[no - 1];
+				// hitting = true;
+				player.hurt(facing);
+//				aSound.play();
+			}else{
+				aSound.play();
+			}
 		}
 	}
 
@@ -145,11 +179,13 @@ public class Monster extends Character implements IRenderable, Runnable {
 		if (!hurting || player.isUseFury()) {
 			// System.out.println("hurt " + hp);
 			if (facing)
-				speedX = -1;
-			else
 				speedX = 1;
+			else
+				speedX = -1;
 			hurting = true;
 			hp--;
+			if(no!=29)
+				hSound.play();
 			if (hp <= 0) {
 				try {
 					Thread.sleep(750);
@@ -169,6 +205,8 @@ public class Monster extends Character implements IRenderable, Runnable {
 		speedX = 0;
 		hitting = false;
 		hurting = false;
+		if(!lock)
+			dSound.play();
 		if (!lock && !player.isUseFury())
 			player.increaseFury(20);
 	}
@@ -188,7 +226,15 @@ public class Monster extends Character implements IRenderable, Runnable {
 	@Override
 	public int getZ() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 9999;
+	}
+
+	public AffineTransformOp getOp() {
+		AffineTransform tran = AffineTransform.getTranslateInstance(frameWidth, 0);
+		AffineTransform flip = AffineTransform.getScaleInstance(-1d, 1d);
+		tran.concatenate(flip);
+		AffineTransformOp op = new AffineTransformOp(tran, AffineTransformOp.TYPE_BILINEAR);
+		return op;
 	}
 
 	@Override
@@ -223,9 +269,14 @@ public class Monster extends Character implements IRenderable, Runnable {
 			else if (hurting)
 				g2.drawImage(mHurt[f], scrollX + x - (mHurt[f].getHeight(null) / 2), y - (mHurt[f].getHeight(null) / 2),
 						null);
-			else if (hitting)
+			else if (hitting && no % 10 != 0)
 				g2.drawImage(mHit[f], scrollX + x - (mHit[f].getHeight(null) / 2), y - (mHit[f].getHeight(null) / 2),
 						null);
+			else if (hitting && no % 10 == 0)
+				g2.drawImage(
+						bHit.getSubimage(currentFrame * bHit.getWidth() / Data.bossFrame[no / 10 - 1], 0,
+								bHit.getWidth() / Data.bossFrame[no / 10 - 1], bHit.getHeight()),
+						(facing) ? getOp() : null, scrollX + x - frameWidth / 2, y - (bHit.getHeight() / 2));
 			else if (speedX != 0)
 				g2.drawImage(mWalk[f], scrollX + x - (mWalk[f].getHeight(null) / 2), y - (mWalk[f].getHeight(null) / 2),
 						null);
@@ -233,16 +284,17 @@ public class Monster extends Character implements IRenderable, Runnable {
 				g2.drawImage(mStand[f], scrollX + x - (mStand[f].getHeight(null) / 2),
 						y - (mStand[f].getHeight(null) / 2), null);
 		}
-		// g2.drawImage(mStand,
-		// op, x - (mStand.getWidth(null) / 2), y - (mStand.getHeight(null) /
-		// 2));
-		// break;
+		if (no % 10 == 0) {
+			// boss hp
+			g2.setColor(new Color(210,0,0));
+			g2.fillRect(Data.boss[0], Data.boss[1], Data.boss[2], Data.boss[3]);
+		}
+
 	}
 
 	@Override
 	public void fall() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -253,9 +305,52 @@ public class Monster extends Character implements IRenderable, Runnable {
 
 	}
 
+	public void play() {
+		currentFrame = 0;
+		playing = true;
+		visible = true;
+	}
+
+	public void stop() {
+		if (hitting)
+			currentFrame = frameCount - 1;
+		else
+			currentFrame = 0;
+		playing = true;
+		visible = true;
+	}
+
+	public void updateAnimation() {
+		if (!playing)
+			return;
+		if (frameDelayCount > 0) {
+			frameDelayCount--;
+			return;
+		}
+		if ((no == 10) && currentFrame >= 5 && currentFrame <= 8 && hitting
+				&& (Math.abs(x - player.getX() + ((facing)?80:-80))) <= Data.sizeMon[no - 1] / 3) {
+			player.hurt(facing);	
+		}else if(no == 20 && currentFrame >= 4 && currentFrame <= 7 && hitting && (Math.abs(x - player.getX() + ((facing)?80:-80))) <= Data.sizeMon[no - 1] / 3) {
+			player.hurt(facing);
+		}else if (no == 30 && currentFrame >= 12 
+				&& hitting && (Math.abs(x - player.getX() + ((facing)?80:-80))) <= Data.sizeMon[no - 1] / 3) {
+			player.hurt(facing);
+		}
+		frameDelayCount = frameDelay;
+		currentFrame++;
+		if (currentFrame == frameCount) {
+			stop();
+			if (hitting) {
+				hitting = false;
+			}
+		}
+	}
+
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		if (no % 10 == 0)
+			play();
 		while (true) {
 			try {
 				Thread.sleep(10);
@@ -284,29 +379,38 @@ public class Monster extends Character implements IRenderable, Runnable {
 			// check range of player
 			if (Math.abs(x - player.getX()) <= Data.sizeMon[no - 1] / 2
 					&& Math.abs(y - player.getY()) <= Data.sizeMon[no - 1] / 2 && no != 29) {
+				if(x < player.getX())
+					facing = true;
+				else
+					facing = false;
 				hit();
+				actionDelayCount = actionDelay;
 			} else if (!hurting && Math.abs(x - player.getX()) < Data.chasingRangeMon[no - 1]) {
 				if (hitting) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+//					if (no % 10 != 0)
+						if (actionDelayCount > 0)
+							actionDelayCount--;
+						else {
+							actionDelayCount = actionDelay;
+							hitting = false;
+						}
+					// else
+					// hitting = false;
+				}
+				if (!hitting) {
+					hitDelayCount = Data.hitDelayMon[no - 1];
+					if (x > player.getX()) {
+						speedX = -speed;
+						facing = false;
+					} else {
+						speedX = speed;
+						facing = true;
 					}
-					hitting = false;
-
+					chasing = true;
 				}
-				hitDelayCount = Data.hitDelayMon[no - 1];
-				if (x > player.getX()) {
-					speedX = -speed;
-					facing = false;
-				} else {
-					speedX = speed;
-					facing = true;
-				}
-				chasing = true;
 			} else {
 				// hittingAnimate = false;
+				hitting = false;
 				hitDelayCount = Data.hitDelayMon[no - 1];
 				chasing = false;
 			}
@@ -327,6 +431,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 				break;
 			}
 			updatePosition();
+			updateAnimation();
 			synchronized (InputUtility.getInstance()) {
 				if (Data.pause)
 					try {

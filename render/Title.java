@@ -116,7 +116,7 @@ public class Title implements IRenderable, Runnable {
 				}
 			else{
 				i++;
-				if(i >= 500)
+				if(i >= 200)
 					break;
 			}
 			if(destroyed){

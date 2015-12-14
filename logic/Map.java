@@ -1,7 +1,11 @@
 package logic;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import exception.InvalidValueException;
 import input.InputUtility;
@@ -19,13 +23,13 @@ public class Map implements Runnable {
 	private boolean clear;
 	private boolean bossSpawn;
 	private boolean destroyed;
+	private AudioClip stageMusic;
+	private AudioClip bossSound;
 	private int no;
 	private Background bg[];
 	private Foreground fg[];
 	private Foreground intf;
 	private int screenX;
-	private int DelaySpawnMon;
-	private int DelaySpawnCount;
 	private Thread prevThread;
 	private int level;
 	public Map(int level, Thread prevThread) throws InvalidValueException {
@@ -33,10 +37,16 @@ public class Map implements Runnable {
 			throw new InvalidValueException(3);
 		this.level = level;
 		this.prevThread = prevThread;
-		DelaySpawnMon = 200 / level;
-		DelaySpawnCount = DelaySpawnMon;
 		no = 1;
-
+		try {
+			ClassLoader loader = Map.class.getClassLoader();
+			stageMusic = Applet.newAudioClip(loader.getResource("src/sfx/Music/stage" + level + ".wav").toURI().toURL());
+			bossSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/boss_"+level+".wav").toURI().toURL());
+		} catch (MalformedURLException | URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			stageMusic = null;
+		}
 	}
 	
 	public boolean isDestroyed() {
@@ -73,6 +83,7 @@ public class Map implements Runnable {
 					boss.lock = true;
 					Thread bossThread = new Thread(boss);
 					bossThread.start();
+					bossSound.play();
 					bossSpawn = true;
 				} catch (InvalidValueException e) {
 					// TODO Auto-generated catch block
@@ -96,6 +107,8 @@ public class Map implements Runnable {
 								((Player)entity).setDestroyed(true);
 							else if(entity instanceof Monster)
 								((Monster)entity).die();
+							if(entity instanceof Title)
+								((Title)entity).setDestroyed(true);
 						}
 						RenderableHolder.getInstance().getRenderableList().clear();
 					}
@@ -106,7 +119,8 @@ public class Map implements Runnable {
 							new Thread(m).start();
 							destroyed = true;
 						}else{
-							MainMenu mainMenu = new MainMenu();
+							destroyed = true;
+							MainMenu mainMenu = new MainMenu(null);
 							new Thread(mainMenu).start();
 						}
 					} catch (InvalidValueException e) {
@@ -143,6 +157,7 @@ public class Map implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		MainMenu.cont = true;
 		Title t = new Title(100 + level, prevThread);
 		new Thread(t).start();
 		try {
@@ -166,8 +181,10 @@ public class Map implements Runnable {
 			Thread mt[] = new Thread[25];
 			for (int i = 0; i < 25; i++) {
 				int ran = (int) (Math.random() * 100 % (8-level) + 1);
-				if(level==2)
+				if(level==2){
+					Data.level = 2;
 					ran+=10;
+				}
 				try {
 					m[i] = new Monster(ran, p1);
 				} catch (InvalidValueException e) {
@@ -178,6 +195,7 @@ public class Map implements Runnable {
 				mt[i].start();
 			}
 		}else if(level == 3){
+			Data.level = 3;
 			m = new Monster[1];
 			try {
 				m[0] = new Monster(29, p1);
@@ -188,10 +206,12 @@ public class Map implements Runnable {
 			new Thread(m[0]).start();
 		}
 		player.start();
+		stageMusic.loop();
 		while (true) {
 			mapManagement();
 			if(destroyed)
 				break;
 		}
+		stageMusic.stop();
 	}
 }

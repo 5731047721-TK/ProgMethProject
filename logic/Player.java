@@ -1,5 +1,7 @@
 package logic;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -30,6 +32,10 @@ public class Player extends Character implements IRenderable, Runnable {
 	private BufferedImage skillEffect1 = null;
 	private BufferedImage skillEffect2 = null;
 	private BufferedImage skillEffect = null;
+	private AudioClip dSound;
+	private AudioClip fSound;
+	private AudioClip hSound;
+	private AudioClip sSound;
 	public boolean lock;
 	private int hp;
 	private boolean destroyed;
@@ -106,7 +112,10 @@ public class Player extends Character implements IRenderable, Runnable {
 				hitEffect = ImageIO.read(loader.getResource("src/player/effect.png"));
 				skillEffect1 = ImageIO.read(loader.getResource("src/player/button_1.png"));
 				skillEffect2 = ImageIO.read(loader.getResource("src/player/button_2.png"));
-				
+				dSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/char_die.wav").toURI().toURL());
+				fSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/char_fun.wav").toURI().toURL());
+				hSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/char_hurt.wav").toURI().toURL());
+				sSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/char_spin.wav").toURI().toURL());
 				skillEffect = skillEffect1;
 				frameWidth = pWalk.getWidth() / 8;
 				frameHeight = pWalk.getHeight();
@@ -124,7 +133,10 @@ public class Player extends Character implements IRenderable, Runnable {
 				hitEffect = null;
 				skillEffect1 = null;
 				skillEffect2 = null;
-				
+				dSound = null;
+				fSound = null;
+				hSound = null;
+				sSound = null;
 			}
 		}
 		// debug
@@ -241,6 +253,7 @@ public class Player extends Character implements IRenderable, Runnable {
 				this.facing = !facing;
 				speedX = -1;
 			}
+			hSound.play();
 			hurting = true;
 			if (hp > 0)
 				hp--;
@@ -254,7 +267,7 @@ public class Player extends Character implements IRenderable, Runnable {
 	@Override
 	public void die() {
 		// TODO Auto-generated method stub
-
+//		dSound.play();
 	}
 
 	public boolean isDestroyed() {
@@ -326,6 +339,7 @@ public class Player extends Character implements IRenderable, Runnable {
 			return;
 		}
 		if (currentFrame == frameCount / 2 && hitting) {
+			fSound.play();
 			damaging = true;
 			effectDir = facing;
 			effectX = x;
@@ -561,6 +575,7 @@ public class Player extends Character implements IRenderable, Runnable {
 	private void useFury() {
 		// TODO Auto-generated method stub
 		if(fury == Data.MAX_FURY){
+			sSound.loop();
 			damaging = true;
 			useFury = true;
 			status = 7;
@@ -568,6 +583,7 @@ public class Player extends Character implements IRenderable, Runnable {
 		}
 		fury--;
 		if(fury<=0){
+			sSound.stop();
 			status = 0;
 			damaging = false;
 			useFury = false;
