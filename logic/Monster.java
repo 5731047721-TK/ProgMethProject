@@ -33,6 +33,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 	private boolean playing;
 	private boolean hurting;
 	private boolean died;
+	private boolean destroyed;
 	private Player player;
 	private int actionDelay;
 	private int actionDelayCount;
@@ -130,6 +131,14 @@ public class Monster extends Character implements IRenderable, Runnable {
 		return died;
 	}
 	
+	public boolean isDestroyed() {
+		return destroyed;
+	}
+
+	public void setDestroyed(boolean destroyed) {
+		this.destroyed = destroyed;
+	}
+
 	@Override
 	public void walk(boolean way) {
 		if (facing)
@@ -364,7 +373,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 					}
 				}
 			}
-			if (Math.abs(x - player.getX()) <= Data.sizeMon[no - 1] / 2
+			if (Math.abs(x - player.getX()) <= Data.sizeMon[no - 1] / ((no%10==0)?3:2)
 					&& Math.abs(y - player.getY()) <= Data.sizeMon[no - 1] / 2 && no != 29) {
 				if(x < player.getX())
 					facing = true;
@@ -411,7 +420,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 			} else {
 				hurting = false;
 			}
-			if (died) {
+			if (died || destroyed) {
 				break;
 			}
 			updatePosition();

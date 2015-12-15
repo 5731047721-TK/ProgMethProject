@@ -65,7 +65,7 @@ public class Map implements Runnable {
 		for (int i = 0; i < bg.length - 1; i++) {
 			bg[i].setFade((i + 1) * Data.foregroundWidth / 400f - (float) p1.getX() / 400f);
 		}
-		if(eggAlive && !m[0].isVisible()){
+		if(eggAlive && m[0].isDied()){
 			eggAlive = false;
 			p1.setUpperBoundX(Data.levelExtent);
 		}
@@ -212,13 +212,15 @@ public class Map implements Runnable {
 			}
 			new Thread(m[0]).start();
 			eggAlive = true;
-			p1.setUpperBoundX(Data.levelExtent - 2 * Data.foregroundWidth + 800);
+			p1.setUpperBoundX(Data.levelExtent - 2 * Data.foregroundWidth + 1000);
 		}
 		player.start();
 		stageMusic.loop();
 		while (true) {
 			mapManagement();
 			if(destroyed)
+				break;
+			if(p1.died)
 				break;
 		}
 		stageMusic.stop();

@@ -141,7 +141,7 @@ public class Title implements IRenderable, Runnable {
 					if(entity instanceof Player)
 						((Player)entity).setDestroyed(true);
 					else if(entity instanceof Monster)
-						((Monster)entity).die();
+						((Monster)entity).setDestroyed(true);
 					if(entity instanceof Title)
 						((Title)entity).setDestroyed(true);
 				}

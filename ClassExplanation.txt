@@ -1,0 +1,6 @@
+Class Main
+	Method
+		- main(args); create JFrame for the game, create MainMenu thread to run MainMenu, Create GameScreen for render all components.
+Class InvalidValueException(int)
+	Constructor
+		Showing an error when one of the following occurs
