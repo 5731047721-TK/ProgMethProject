@@ -9,11 +9,9 @@ public class InvalidValueException extends Exception {
 
 	public InvalidValueException(int type) {
 		super();
-		// JOptionPane pane;
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				switch (type) {
 				case 0:
 					JOptionPane.showMessageDialog(null, "No data of the specified monster", "Warning",

@@ -59,30 +59,25 @@ public class Title implements IRenderable, Runnable {
 
 	@Override
 	public boolean isVisible() {
-		// TODO Auto-generated method stub
 		return visible;
 	}
 
 	@Override
 	public int getZ() {
-		// TODO Auto-generated method stub
 		return Integer.MAX_VALUE;
 	}
 
 	@Override
 	public void render(Graphics2D g2) {
-		// TODO Auto-generated method stub
 		g2.drawImage(title, null, 0, 0);
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		if (prevThread != null) {
 			try {
 				prevThread.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -93,7 +88,6 @@ public class Title implements IRenderable, Runnable {
 			try {
 				Thread.sleep(5);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			setFade(fade + 0.01f);
@@ -101,11 +95,9 @@ public class Title implements IRenderable, Runnable {
 		}
 		int i =0;
 		while (true) {
-			// System.out.println("Hello" + no);
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			GameScreen.getGamescreen().repaint();
@@ -129,7 +121,6 @@ public class Title implements IRenderable, Runnable {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			fade -= 0.01;

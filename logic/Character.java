@@ -54,8 +54,6 @@ public abstract class Character {
 
 	public void setStatus(int status) {
 		this.status = status;
-		// 2 = jumping
-		// 3 = falling
 	}
 
 	public int getX() {
@@ -74,7 +72,6 @@ public abstract class Character {
 	public void setY(int y) {
 		if (y > ground && !onGround) {
 			onGround = true;
-			// status = 0;
 			y = ground;
 		}
 		if (y >= 0 && y <= ground) {

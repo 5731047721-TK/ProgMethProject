@@ -3,7 +3,7 @@
   realizations="true" associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
   <class id="1" language="java" name="Main" project="DragonHeart" file="/DragonHeart/Main.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1352" y="3"/>    
+    <position height="-1" width="-1" x="1268" y="15"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -12,7 +12,7 @@
   </class>  
   <class id="2" language="java" name="exception.InvalidValueException" project="DragonHeart" 
     file="/DragonHeart/exception/InvalidValueException.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1353" y="130"/>    
+    <position height="-1" width="-1" x="1295" y="714"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -21,7 +21,7 @@
   </class>  
   <class id="3" language="java" name="input.InputUtility" project="DragonHeart" 
     file="/DragonHeart/input/InputUtility.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1600" y="317"/>    
+    <position height="-1" width="-1" x="1286" y="269"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -30,7 +30,7 @@
   </class>  
   <class id="4" language="java" name="logic.Character" project="DragonHeart" file="/DragonHeart/logic/Character.java" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="878" y="472"/>    
+    <position height="-1" width="-1" x="238" y="368"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -39,7 +39,7 @@
   </class>  
   <class id="5" language="java" name="logic.Data" project="DragonHeart" file="/DragonHeart/logic/Data.java" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1836" y="287"/>    
+    <position height="-1" width="-1" x="1298" y="1059"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -48,7 +48,7 @@
   </class>  
   <class id="6" language="java" name="logic.MainMenu" project="DragonHeart" file="/DragonHeart/logic/MainMenu.java" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1135" y="1868"/>    
+    <position height="-1" width="-1" x="529" y="1169"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -57,7 +57,7 @@
   </class>  
   <class id="7" language="java" name="logic.Map" project="DragonHeart" file="/DragonHeart/logic/Map.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="901" y="1179"/>    
+    <position height="-1" width="-1" x="241" y="1083"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -66,7 +66,7 @@
   </class>  
   <class id="8" language="java" name="logic.Player" project="DragonHeart" file="/DragonHeart/logic/Player.java" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1542" y="1405"/>    
+    <position height="-1" width="-1" x="1059" y="848"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -75,7 +75,7 @@
   </class>  
   <class id="9" language="java" name="logic.Monster" project="DragonHeart" file="/DragonHeart/logic/Monster.java" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1173" y="386"/>    
+    <position height="-1" width="-1" x="557" y="390"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -84,7 +84,7 @@
   </class>  
   <class id="10" language="java" name="render.Background" project="DragonHeart" 
     file="/DragonHeart/render/Background.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1324" y="1694"/>    
+    <position height="-1" width="-1" x="816" y="1046"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -93,7 +93,7 @@
   </class>  
   <class id="11" language="java" name="render.Foreground" project="DragonHeart" 
     file="/DragonHeart/render/Foreground.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="922" y="1643"/>    
+    <position height="-1" width="-1" x="790" y="1383"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -102,7 +102,7 @@
   </class>  
   <class id="12" language="java" name="render.GameScreen" project="DragonHeart" 
     file="/DragonHeart/render/GameScreen.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1598" y="53"/>    
+    <position height="-1" width="-1" x="1290" y="519"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -111,7 +111,7 @@
   </class>  
   <interface id="13" language="java" name="render.IRenderable" project="DragonHeart" 
     file="/DragonHeart/render/IRenderable.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1497" y="572"/>    
+    <position height="-1" width="-1" x="817" y="400"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -120,7 +120,7 @@
   </interface>  
   <class id="14" language="java" name="render.Title" project="DragonHeart" file="/DragonHeart/render/Title.java" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1839" y="837"/>    
+    <position height="-1" width="-1" x="815" y="113"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -129,7 +129,7 @@
   </class>  
   <class id="15" language="java" name="render.RenderableHolder" project="DragonHeart" 
     file="/DragonHeart/render/RenderableHolder.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1820" y="1191"/>    
+    <position height="-1" width="-1" x="1052" y="43"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -137,6 +137,8 @@
     </display>  
   </class>  
   <association id="16">    
+    <bendpoint x="433" y="937"/>    
+    <bendpoint x="620" y="937"/>    
     <end type="SOURCE" refId="7" navigable="false">      
       <attribute id="17" name="bg"/>      
       <multiplicity id="18" minimum="0" maximum="2147483647"/>    
@@ -157,6 +159,7 @@
     <end type="TARGET" refId="4"/>  
   </generalization>  
   <association id="23">    
+    <bendpoint x="454" y="1405"/>    
     <end type="SOURCE" refId="7" navigable="false">      
       <attribute id="24" name="fg"/>      
       <multiplicity id="25" minimum="0" maximum="2147483647"/>    
@@ -213,10 +216,12 @@
     <end type="TARGET" refId="13"/>  
   </realization>  
   <generalization id="43">    
+    <bendpoint x="468" y="850"/>    
     <end type="SOURCE" refId="8"/>    
     <end type="TARGET" refId="4"/>  
   </generalization>  
   <association id="44">    
+    <bendpoint x="926" y="1332"/>    
     <end type="SOURCE" refId="11" navigable="false">      
       <attribute id="45" name="player"/>      
       <multiplicity id="46" minimum="0" maximum="1"/>    
@@ -245,10 +250,12 @@
     <end type="TARGET" refId="13"/>  
   </realization>  
   <realization id="54">    
+    <bendpoint x="680" y="1154"/>    
     <end type="SOURCE" refId="11"/>    
     <end type="TARGET" refId="13"/>  
   </realization>  
   <association id="55">    
+    <bendpoint x="424" y="908"/>    
     <end type="SOURCE" refId="7" navigable="false">      
       <attribute id="56" name="p1"/>      
       <multiplicity id="57" minimum="0" maximum="1"/>    

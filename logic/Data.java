@@ -23,18 +23,5 @@ public class Data {
 	public static final int[] sizeMon = {80,100,80,180,150,200,150,0,0,400,100,120,120,150,200,180,0,0,0,400,0,0,0,0,0,0,0,0,500,500};
 	public static final int[] hitDelayMon = {50,70,20,40,60,80,70,0,0,120,80,50,60,50,60,40,0,0,0,20,0,0,0,0,0,0,0,0,0,60};
 	public static final int[] chasingRangeMon = {200,200,200,200,300,300,300,0,0,20000,300,300,400,400,400,400,0,0,0,20000,0,0,0,0,0,0,0,0,0,20000};
-	
 	public static final int[] map = {7,6,0};
-	//will be changed when actual sprite done
-	public static final int frameCountMaleWalk = 4;
-	public static final int frameCountMaleHit = 4;
-	public static final int frameCountMaleJump = 4;
-	
-	public static final int frameCountFemaleWalk = 4;
-	public static final int frameCountFemaleHit = 4;
-	public static final int frameCountFemaleJump = 4;
-	
-	public static final int frameCountMonWalk = 4;
-	public static final int frameCountMonHit = 4;
-	public static final int frameCountMonJump = 4;
 }

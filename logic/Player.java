@@ -41,7 +41,6 @@ public class Player extends Character implements IRenderable, Runnable {
 	public boolean lock;
 	private int hp;
 	private boolean destroyed;
-	// private int gender;
 	private boolean visible;
 	private boolean playing;
 	private boolean hitting;
@@ -83,9 +82,6 @@ public class Player extends Character implements IRenderable, Runnable {
 		this.fadeDelayCount = this.fadeDelay;
 		this.effectX = 0;
 		this.effectY = 0;
-		// this.hitDelay = 20;
-		// this.hitDelayCount = hitDelay;
-		// this.gender = gender;
 		this.playing = true;
 		this.visible = true;
 		this.jumpSpeed = 17;
@@ -122,7 +118,6 @@ public class Player extends Character implements IRenderable, Runnable {
 				skillEffect = skillEffect1;
 				frameWidth = pWalk.getWidth() / 8;
 				frameHeight = pWalk.getHeight();
-				// System.out.println("The image are loaded");
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("The image can't be loaded");
@@ -143,8 +138,6 @@ public class Player extends Character implements IRenderable, Runnable {
 				gameOver = null;
 			}
 		}
-		// debug
-
 	}
 
 	public void start(int level) {
@@ -203,12 +196,10 @@ public class Player extends Character implements IRenderable, Runnable {
 
 	@Override
 	public void hit() {
-		// TODO Auto-generated method stub
 		if (hitting && useFury)
 			return;
 		if (status != 4) {
 			currentFrame = 0;
-			// speedX = 0;
 		}
 		hitting = true;
 		status = 4;
@@ -230,7 +221,6 @@ public class Player extends Character implements IRenderable, Runnable {
 
 	@Override
 	public void hurt(boolean facing) {
-		// TODO Auto-generated method stub
 		if (!hurting && invTime == 0) {
 			// System.out.println("hurt " + hp);
 			status = 6;
@@ -255,7 +245,6 @@ public class Player extends Character implements IRenderable, Runnable {
 
 	@Override
 	public void die() {
-		// TODO Auto-generated method stub
 		died = true;
 		speedX = 0;
 		hitting = false;
@@ -274,7 +263,6 @@ public class Player extends Character implements IRenderable, Runnable {
 
 	@Override
 	public void jump() {
-		// TODO Auto-generated method stub
 		if (jumpTime < 1 && hitting) {
 			speedY = jumpSpeed;
 			jumpTime++;
@@ -309,7 +297,6 @@ public class Player extends Character implements IRenderable, Runnable {
 		this.setY(y - speedY);
 	}
 
-	//
 	public void play() {
 		currentFrame = 0;
 		playing = true;
@@ -343,7 +330,6 @@ public class Player extends Character implements IRenderable, Runnable {
 		currentFrame++;
 		if (currentFrame == frameCount) {
 			stop();
-
 			if (hitting) {
 				damaging = false;
 				hitting = false;
@@ -363,13 +349,11 @@ public class Player extends Character implements IRenderable, Runnable {
 
 	@Override
 	public boolean isVisible() {
-		// TODO Auto-generated method stub
 		return visible;
 	}
 
 	@Override
 	public int getZ() {
-		// TODO Auto-generated method stub
 		return 10000;
 	}
 
@@ -459,7 +443,6 @@ public class Player extends Character implements IRenderable, Runnable {
 			g2.drawImage(pDie, op, drawX, y - (pDie.getHeight() / 2));
 		}
 		if (damaging) {
-			// System.out.println(effectDir);
 			float fading = 1f - distanceEffect / 100f;
 			if(fading > 1f) fading = 1f;
 			if(fading < 0f) fading = 0f;
@@ -488,19 +471,16 @@ public class Player extends Character implements IRenderable, Runnable {
 		}
 		g2.setColor(furyColor);
 		g2.fillRect(Data.furyInit[0], Data.furyInit[1], (fury * Data.furyInit[2] / Data.MAX_FURY), Data.furyInit[3]);
-		// System.out.println(fury);
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		play();
 		InputUtility instance = InputUtility.getInstance();
 		while (true) {
 			try {
 				Thread.sleep(18);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if (damaging) {
@@ -567,7 +547,6 @@ public class Player extends Character implements IRenderable, Runnable {
 					try {
 						instance.wait();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 			}
@@ -576,14 +555,12 @@ public class Player extends Character implements IRenderable, Runnable {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 
 	private void useFury() {
-		// TODO Auto-generated method stub
 		if(fury == Data.MAX_FURY){
 			sSound.loop();
 			damaging = true;

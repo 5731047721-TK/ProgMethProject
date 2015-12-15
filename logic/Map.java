@@ -2,8 +2,6 @@ package logic;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
@@ -27,11 +25,8 @@ public class Map implements Runnable {
 	private AudioClip bossSound;
 	private AudioClip pauseSound;
 	private AudioClip stageClear;
-	private int no;
 	private Background bg[];
 	private Foreground fg[];
-	private Foreground intf;
-	private int screenX;
 	private Thread prevThread;
 	private int level;
 	public Map(int level, Thread prevThread) throws InvalidValueException {
@@ -39,7 +34,6 @@ public class Map implements Runnable {
 			throw new InvalidValueException(3);
 		this.level = level;
 		this.prevThread = prevThread;
-		no = 1;
 		try {
 			ClassLoader loader = Map.class.getClassLoader();
 			stageMusic = Applet.newAudioClip(loader.getResource("src/sfx/Music/stage" + level + ".wav").toURI().toURL());
@@ -47,7 +41,6 @@ public class Map implements Runnable {
 			bossSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/boss_"+level+".wav").toURI().toURL());
 			pauseSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/title_select.wav").toURI().toURL());
 		} catch (MalformedURLException | URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			stageMusic = null;
 			stageClear = null;
@@ -89,7 +82,7 @@ public class Map implements Runnable {
 			}
 			if (!bossSpawn) {
 				try {
-					intf = new Foreground(null, 7775 + 2*level + 1, false, 0);
+					new Foreground(null, 7775 + 2*level + 1, false, 0);
 					boss = new Monster(level*10, p1);
 					boss.lock = true;
 					Thread bossThread = new Thread(boss);
@@ -97,11 +90,10 @@ public class Map implements Runnable {
 					bossSound.play();
 					bossSpawn = true;
 				} catch (InvalidValueException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else {
-				if(!boss.isVisible() && !clear){
+				if(boss.isDied() && !clear){
 					stageClear.play();
 					clear = true;
 					Title sClear = new Title(-2,null);
@@ -109,7 +101,6 @@ public class Map implements Runnable {
 					try {
 						Thread.sleep(3000);
 					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					synchronized(RenderableHolder.getInstance()){
@@ -145,7 +136,6 @@ public class Map implements Runnable {
 							new Thread(mainMenu).start();
 						}
 					} catch (InvalidValueException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -160,7 +150,6 @@ public class Map implements Runnable {
 				try {
 					InputUtility.getInstance().wait();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				pauseSound.play();
@@ -171,12 +160,10 @@ public class Map implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		if (prevThread != null) {
 			try {
 				prevThread.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -186,7 +173,6 @@ public class Map implements Runnable {
 		try {
 			p1 = new Player(5);
 		} catch (InvalidValueException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		Thread player = new Thread(p1);
@@ -194,7 +180,7 @@ public class Map implements Runnable {
 		for (int i = 0; i < bg.length; i++) {
 			bg[i] = new Background(p1, level, i + 1);
 		}
-		intf = new Foreground(null, 7775 + 2*level, false, 0);
+		new Foreground(null, 7775 + 2*level, false, 0);
 		fg = new Foreground[4];
 		for (int i = 0; i < fg.length; i++) {
 			fg[i] = new Foreground(p1, level, false, i);
@@ -211,7 +197,6 @@ public class Map implements Runnable {
 				try {
 					m[i] = new Monster(ran, p1);
 				} catch (InvalidValueException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				mt[i] = new Thread(m[i]);
@@ -223,7 +208,6 @@ public class Map implements Runnable {
 			try {
 				m[0] = new Monster(29, p1);
 			} catch (InvalidValueException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			new Thread(m[0]).start();

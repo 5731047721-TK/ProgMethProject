@@ -84,13 +84,8 @@ public class Monster extends Character implements IRenderable, Runnable {
 		this.speedX = 0;
 		this.speedY = 0;
 		this.ground = 310;
-		// String source = "src/monster/" + this.no + ".png";
 		try {
 			ClassLoader loader = Monster.class.getClassLoader();
-			// mStand = ImageIO.read(loader.getResource("src/monster/" + this.no
-			// + ".GIF"));
-			// mWalk = ImageIO.read(loader.getResource("src/monster/" + this.no
-			// + ".GIF"));
 			mStand[0] = new ImageIcon(loader.getResource("src/monster/" + this.no + "_1.GIF")).getImage();
 			mDie = new ImageIcon(loader.getResource("src/monster/" + this.no + "_9.GIF")).getImage();
 			String num = (no<10)?"0"+no:""+no;
@@ -131,9 +126,12 @@ public class Monster extends Character implements IRenderable, Runnable {
 		return no;
 	}
 
+	public boolean isDied() {
+		return died;
+	}
+	
 	@Override
 	public void walk(boolean way) {
-		// TODO Auto-generated method stub
 		if (facing)
 			speedX = speed;
 		else
@@ -142,13 +140,11 @@ public class Monster extends Character implements IRenderable, Runnable {
 
 	@Override
 	public void stand() {
-		// TODO Auto-generated method stub
 		speedX = 0;
 	}
 
 	@Override
 	public void hit() {
-		// TODO Auto-generated method stub
 		if (!hurting) {
 			speedX = 0;
 			if (!hitting) {
@@ -163,9 +159,7 @@ public class Monster extends Character implements IRenderable, Runnable {
 					return;
 				}
 				hitDelayCount = Data.hitDelayMon[no - 1];
-				// hitting = true;
 				player.hurt(facing);
-//				aSound.play();
 			}else{
 				aSound.play();
 			}
@@ -175,7 +169,6 @@ public class Monster extends Character implements IRenderable, Runnable {
 	@Override
 	public void hurt(boolean facing) {
 		if (!hurting || player.isUseFury()) {
-			// System.out.println("hurt " + hp);
 			if (facing)
 				speedX = 1;
 			else
@@ -199,7 +192,6 @@ public class Monster extends Character implements IRenderable, Runnable {
 				try {
 					Thread.sleep(750);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				die();
@@ -209,7 +201,6 @@ public class Monster extends Character implements IRenderable, Runnable {
 
 	@Override
 	public void die() {
-		// TODO Auto-generated method stub
 		died = true;
 		speedX = 0;
 		hitting = false;
@@ -221,20 +212,16 @@ public class Monster extends Character implements IRenderable, Runnable {
 	}
 
 	@Override
-	public void jump() {
-		// TODO Auto-generated method stub
-
+	public void jump(){
 	}
 
 	@Override
 	public boolean isVisible() {
-		// TODO Auto-generated method stub
 		return visible;
 	}
 
 	@Override
 	public int getZ() {
-		// TODO Auto-generated method stub
 		return 9999;
 	}
 
@@ -248,15 +235,12 @@ public class Monster extends Character implements IRenderable, Runnable {
 
 	@Override
 	public void render(Graphics2D g2) {
-		// TODO Auto-generated method stub
-
 		int scrollX;
 		if (player == null)
 			scrollX = 0;
 		else {
 			scrollX = Data.screenWidth / 3 - player.getX();
 			int levelExtentX = Data.levelExtent;
-
 			if (player.getX() < Data.screenWidth / 3)
 				scrollX = 0;
 			else if (player.getX() > levelExtentX - 2 * Data.screenWidth / 3)
@@ -265,7 +249,6 @@ public class Monster extends Character implements IRenderable, Runnable {
 		if (lock)
 			scrollX = -(Data.levelExtent - Data.screenWidth);
 		int f = (facing) ? 1 : 0;
-		// System.out.println(speedX);
 		if (no == 29) {
 			if (died)
 				g2.drawImage(mDie, scrollX + x - (mDie.getHeight(null) / 2), y - (mDie.getHeight(null) / 2), null);
@@ -304,12 +287,10 @@ public class Monster extends Character implements IRenderable, Runnable {
 
 	@Override
 	public void fall() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void updatePosition() {
-		// TODO Auto-generated method stub
 		this.setX(x + speedX);
 		this.setY(y - speedY);
 
@@ -364,18 +345,15 @@ public class Monster extends Character implements IRenderable, Runnable {
 			try {
 				if(no!=29)
 					Thread.sleep(10);
-				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-
 			if (!chasing && !hitting && !hurting && no != 29) {
 				if (actionDelayCount > 0)
 					actionDelayCount--;
 				else {
 					actionDelayCount = actionDelay;
 					int act = (int) (Math.random() * 100);
-					// System.out.println(act);
 					if (act >= 70) {
 						stand();
 						facing = !facing;
@@ -386,7 +364,6 @@ public class Monster extends Character implements IRenderable, Runnable {
 					}
 				}
 			}
-			// check range of player
 			if (Math.abs(x - player.getX()) <= Data.sizeMon[no - 1] / 2
 					&& Math.abs(y - player.getY()) <= Data.sizeMon[no - 1] / 2 && no != 29) {
 				if(x < player.getX())
@@ -397,15 +374,12 @@ public class Monster extends Character implements IRenderable, Runnable {
 				actionDelayCount = actionDelay;
 			} else if (!hurting && Math.abs(x - player.getX()) < Data.chasingRangeMon[no - 1]) {
 				if (hitting) {
-//					if (no % 10 != 0)
 						if (actionDelayCount > 0)
 							actionDelayCount--;
 						else {
 							actionDelayCount = actionDelay;
 							hitting = false;
 						}
-					// else
-					// hitting = false;
 				}
 				if (!hitting) {
 					hitDelayCount = Data.hitDelayMon[no - 1];
@@ -419,7 +393,6 @@ public class Monster extends Character implements IRenderable, Runnable {
 					chasing = true;
 				}
 			} else {
-				// hittingAnimate = false;
 				hitting = false;
 				hitDelayCount = Data.hitDelayMon[no - 1];
 				chasing = false;
@@ -465,5 +438,6 @@ public class Monster extends Character implements IRenderable, Runnable {
 			RenderableHolder.getInstance().getRenderableList().remove(this);
 		}
 	}
+
 
 }

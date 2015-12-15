@@ -1,6 +1,5 @@
 package render;
 
-import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
@@ -56,20 +55,17 @@ public class Background implements IRenderable {
 	
 	@Override
 	public boolean isVisible() {
-		// TODO Auto-generated method stub
 		return visible;
 	}
 
 	@Override
 	public int getZ() {
-		// TODO Auto-generated method stub
 		if(map == 0) return Integer.MAX_VALUE; 
 		return -1000000 - no;
 	}
 
 	@Override
 	public void render(Graphics2D g2) {
-		// TODO Auto-generated method stub
 		int scrollX;
 		if (player == null)
 			scrollX = 0;
@@ -84,7 +80,6 @@ public class Background implements IRenderable {
 		}
 		if(lock)
 			scrollX = -(Data.levelExtent - Data.screenWidth)/8;
-		// System.out.println(no);
 		if (no < 0)
 			g2.drawImage(bg, null, scrollX, 0);
 		else

@@ -33,16 +33,11 @@ public class Foreground implements IRenderable{
 		synchronized (RenderableHolder.getInstance()) {
 			RenderableHolder.getInstance().add(this);
 		}
-		
 	}
-
-	
 	
 	public float getFade() {
 		return fade;
 	}
-
-
 
 	public void setFade(float fade) {
 		if (fade > 1)
@@ -56,20 +51,17 @@ public class Foreground implements IRenderable{
 
 	@Override
 	public boolean isVisible() {
-		// TODO Auto-generated method stub
 		return visible;
 	}
 
 	@Override
 	public int getZ() {
-		// TODO Auto-generated method stub
 		if(player == null) return 7777;
 		return -7777;
 	}
 
 	@Override
 	public void render(Graphics2D g2) {
-		// TODO Auto-generated method stub
 		int scrollX;
 		if(player==null)
 			scrollX = 0;

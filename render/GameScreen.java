@@ -24,7 +24,6 @@ public class GameScreen extends JComponent {
 		super();
 
 		setDoubleBuffered(true);
-		// this.logic = logic;
 		this.setPreferredSize(new Dimension(Data.screenWidth, Data.screenHeight));
 		opacity = 0;
 		direction = 1;
@@ -34,13 +33,10 @@ public class GameScreen extends JComponent {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
 				if (e.getKeyCode() >= 0 && e.getKeyCode() <= 255) {
 					synchronized (instance) {
 						instance.setKeypressed(e.getKeyCode(), false);
@@ -50,7 +46,6 @@ public class GameScreen extends JComponent {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
 				synchronized (instance) {
 					if (e.getKeyCode() >= 0 && e.getKeyCode() <= 255 && !instance.getKeypressed(e.getKeyCode())) {
 						instance.setKeypressed(e.getKeyCode(), true);
@@ -82,7 +77,6 @@ public class GameScreen extends JComponent {
 		opacity += 0.01 * direction;
 		if (opacity >= 0.999 || opacity <= 0.001)
 			direction *= -1;
-//		System.out.println(RenderableHolder.getInstance().getRenderableList().toString());
 		synchronized (RenderableHolder.getInstance()) {
 			for (IRenderable entity : RenderableHolder.getInstance().getRenderableList()) {
 				if(entity instanceof Player){

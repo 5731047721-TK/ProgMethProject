@@ -46,9 +46,7 @@ public class MainMenu implements Runnable {
 	}
 
 	public void start() {
-		// TODO Auto-generated method stub
 		synchronized (RenderableHolder.getInstance()) {
-			// level 1
 			RenderableHolder.getInstance().getRenderableList().remove(bg);
 			RenderableHolder.getInstance().getRenderableList().remove(select);
 			select = null;
@@ -70,7 +68,6 @@ public class MainMenu implements Runnable {
 			Thread map = new Thread(m);
 			map.start();
 		} catch (InvalidValueException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		start = true;
@@ -78,7 +75,6 @@ public class MainMenu implements Runnable {
 
 	public void cont() {
 		synchronized (RenderableHolder.getInstance()) {
-			// level 1
 			RenderableHolder.getInstance().getRenderableList().remove(bg);
 			RenderableHolder.getInstance().getRenderableList().remove(select);
 			select = null;
@@ -90,7 +86,6 @@ public class MainMenu implements Runnable {
 			Thread map = new Thread(m);
 			map.start();
 		} catch (InvalidValueException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		start = true;
@@ -98,7 +93,6 @@ public class MainMenu implements Runnable {
 	
 	public void credit(){
 		synchronized (RenderableHolder.getInstance()) {
-			// level 1
 			RenderableHolder.getInstance().getRenderableList().remove(bg);
 			RenderableHolder.getInstance().getRenderableList().remove(select);
 			select = null;
@@ -110,7 +104,6 @@ public class MainMenu implements Runnable {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -126,14 +119,11 @@ public class MainMenu implements Runnable {
 			creditT[i].start();
 		}
 		start = true;
-//		cont = true;
-//		creditMusic.stop();
 		new Thread(new MainMenu(creditT[2])).start();
 	}
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		try {
 			ClassLoader loader = MainMenu.class.getClassLoader();
 			mainMusic = Applet.newAudioClip(loader.getResource("src/sfx/Music/gametitle.wav").toURI().toURL());
@@ -144,7 +134,6 @@ public class MainMenu implements Runnable {
 			titleUpDown =Applet.newAudioClip(loader.getResource("src/sfx/Sound/title_updown.wav").toURI().toURL());
 			 
 		} catch (MalformedURLException | URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			mainMusic = null;
 			storyMusic = null;
@@ -156,7 +145,6 @@ public class MainMenu implements Runnable {
 			try {
 				prevThread.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -185,14 +173,12 @@ public class MainMenu implements Runnable {
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		while (true) {
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			update = false;
@@ -215,9 +201,7 @@ public class MainMenu implements Runnable {
 						option = 3;
 					instance.setKeytriggered(KeyEvent.VK_UP, false);
 				} else if (instance.getKeytriggered(KeyEvent.VK_SPACE)) {
-					// update = true;
 					instance.setKeytriggered(KeyEvent.VK_SPACE, false);
-					// RenderableHolder.getInstance().getRenderableList().remove(select);
 					titleSelect.play();
 					switch (option) {
 					case 0:
@@ -252,7 +236,6 @@ public class MainMenu implements Runnable {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
