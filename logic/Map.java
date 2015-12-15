@@ -16,15 +16,17 @@ import render.RenderableHolder;
 import render.Title;
 
 public class Map implements Runnable {
-	private int map[][];
 	private Player p1;
 	private Monster m[];
 	private Monster boss;
 	private boolean clear;
 	private boolean bossSpawn;
 	private boolean destroyed;
+	private boolean eggAlive;
 	private AudioClip stageMusic;
 	private AudioClip bossSound;
+	private AudioClip pauseSound;
+	private AudioClip stageClear;
 	private int no;
 	private Background bg[];
 	private Foreground fg[];
@@ -41,11 +43,16 @@ public class Map implements Runnable {
 		try {
 			ClassLoader loader = Map.class.getClassLoader();
 			stageMusic = Applet.newAudioClip(loader.getResource("src/sfx/Music/stage" + level + ".wav").toURI().toURL());
+			stageClear = Applet.newAudioClip(loader.getResource("src/sfx/Music/clear.wav").toURI().toURL());
 			bossSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/boss_"+level+".wav").toURI().toURL());
+			pauseSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/title_select.wav").toURI().toURL());
 		} catch (MalformedURLException | URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			stageMusic = null;
+			stageClear = null;
+			bossSound = null;
+			pauseSound = null;
 		}
 	}
 	
@@ -64,6 +71,10 @@ public class Map implements Runnable {
 	public void mapManagement() {
 		for (int i = 0; i < bg.length - 1; i++) {
 			bg[i].setFade((i + 1) * Data.foregroundWidth / 400f - (float) p1.getX() / 400f);
+		}
+		if(eggAlive && !m[0].isVisible()){
+			eggAlive = false;
+			p1.setUpperBoundX(Data.levelExtent);
 		}
 		if (p1.getX() > Data.levelExtent - Data.screenWidth + Data.screenWidth / 3) {
 			p1.lowerBoundX = Data.levelExtent - Data.screenWidth;
@@ -91,10 +102,10 @@ public class Map implements Runnable {
 				}
 			} else {
 				if(!boss.isVisible() && !clear){
+					stageClear.play();
 					clear = true;
-					Title stageClear = new Title(-2,null);
-					Thread clearThread = new Thread(stageClear);
-					clearThread.start();
+					Title sClear = new Title(-2,null);
+					new Thread(sClear).start();
 					try {
 						Thread.sleep(3000);
 					} catch (InterruptedException e1) {
@@ -120,7 +131,17 @@ public class Map implements Runnable {
 							destroyed = true;
 						}else{
 							destroyed = true;
-							MainMenu mainMenu = new MainMenu(null);
+							Title end[] = new Title[4];
+							Thread endT[] = new Thread[4];
+							for(int i = 0;i<4;i++){
+								if(i==0)
+									end[i] = new Title(i+13, null);
+								else
+									end[i] = new Title(i+13, endT[i-1]);
+								endT[i] = new Thread(end[i]);
+								endT[i].start();
+							}
+							MainMenu mainMenu = new MainMenu(endT[3]);
 							new Thread(mainMenu).start();
 						}
 					} catch (InvalidValueException e) {
@@ -135,12 +156,14 @@ public class Map implements Runnable {
 				Title pause = new Title(0, null);
 				Thread pauseThread = new Thread(pause);
 				pauseThread.start();
+				pauseSound.play();
 				try {
 					InputUtility.getInstance().wait();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				pauseSound.play();
 				pause.setDestroyed(true);
 			}
 		}
@@ -204,6 +227,8 @@ public class Map implements Runnable {
 				e.printStackTrace();
 			}
 			new Thread(m[0]).start();
+			eggAlive = true;
+			p1.setUpperBoundX(Data.levelExtent - 2 * Data.foregroundWidth + 800);
 		}
 		player.start();
 		stageMusic.loop();

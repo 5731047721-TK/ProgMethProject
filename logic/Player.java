@@ -19,6 +19,7 @@ import input.InputUtility;
 import render.GameScreen;
 import render.IRenderable;
 import render.RenderableHolder;
+import render.Title;
 
 public class Player extends Character implements IRenderable, Runnable {
 	private BufferedImage pStand = null;
@@ -36,6 +37,7 @@ public class Player extends Character implements IRenderable, Runnable {
 	private AudioClip fSound;
 	private AudioClip hSound;
 	private AudioClip sSound;
+	public static AudioClip gameOver;
 	public boolean lock;
 	private int hp;
 	private boolean destroyed;
@@ -63,7 +65,7 @@ public class Player extends Character implements IRenderable, Runnable {
 
 	private boolean facing;
 
-	private boolean die;
+	protected boolean died;
 
 	public Player(int speed) throws InvalidValueException {
 		super();
@@ -116,6 +118,7 @@ public class Player extends Character implements IRenderable, Runnable {
 				fSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/char_fun.wav").toURI().toURL());
 				hSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/char_hurt.wav").toURI().toURL());
 				sSound = Applet.newAudioClip(loader.getResource("src/sfx/Sound/char_spin.wav").toURI().toURL());
+				gameOver = Applet.newAudioClip(loader.getResource("src/sfx/Music/gameover.wav").toURI().toURL());
 				skillEffect = skillEffect1;
 				frameWidth = pWalk.getWidth() / 8;
 				frameHeight = pWalk.getHeight();
@@ -137,6 +140,7 @@ public class Player extends Character implements IRenderable, Runnable {
 				fSound = null;
 				hSound = null;
 				sSound = null;
+				gameOver = null;
 			}
 		}
 		// debug
@@ -175,10 +179,7 @@ public class Player extends Character implements IRenderable, Runnable {
 
 	@Override
 	public void walk(boolean way) {
-		// TODO Auto-generated method stub
 		facing = way;
-		// if(hitting)
-		// return;
 		if (onGround && !hitting && !useFury) {
 			if (status != 1)
 				currentFrame = 0;
@@ -192,7 +193,6 @@ public class Player extends Character implements IRenderable, Runnable {
 
 	@Override
 	public void stand() {
-		// TODO Auto-generated method stub
 		if (!hitting && !useFury) {
 			speedX = 0;
 			status = 0;
@@ -212,17 +212,6 @@ public class Player extends Character implements IRenderable, Runnable {
 		}
 		hitting = true;
 		status = 4;
-		// if (!hurting) {
-		// speedX = 0;
-		// hitting = true;
-		// status = 4;
-		// if (hitDelayCount > 0) {
-		// hitDelayCount--;
-		// return;
-		// }
-		// hitDelayCount = hitDelay;
-		// // hitting = true;
-		// }
 	}
 
 	public void jumpHit() {
@@ -245,7 +234,7 @@ public class Player extends Character implements IRenderable, Runnable {
 		if (!hurting && invTime == 0) {
 			// System.out.println("hurt " + hp);
 			status = 6;
-			increaseFury(100);
+			increaseFury(50);
 			if (facing) {
 				this.facing = !facing;
 				speedX = 1;
@@ -267,7 +256,12 @@ public class Player extends Character implements IRenderable, Runnable {
 	@Override
 	public void die() {
 		// TODO Auto-generated method stub
-//		dSound.play();
+		died = true;
+		speedX = 0;
+		hitting = false;
+		hurting = false;
+		status = 8;
+		dSound.play();
 	}
 
 	public boolean isDestroyed() {
@@ -383,6 +377,11 @@ public class Player extends Character implements IRenderable, Runnable {
 	public void setX(int x) {
 		if (x >= lowerBoundX && x <= upperBoundX)
 			this.x = x;
+	}
+	
+	public void setUpperBoundX(int x){
+		if(upperBoundX>=0 && upperBoundX <= Data.levelExtent)
+			upperBoundX = x;
 	}
 
 	public AffineTransformOp getOp() {
@@ -528,7 +527,7 @@ public class Player extends Character implements IRenderable, Runnable {
 			if(status == 7){
 				this.useFury();
 			}
-			if (!hurting) {
+			if (!hurting && !died) {
 				synchronized (instance) {
 					if (instance.getKeytriggered(KeyEvent.VK_Z)) {
 						if (this.isOnGround())
@@ -551,8 +550,11 @@ public class Player extends Character implements IRenderable, Runnable {
 					instance.postUpdate();
 				}
 			}
-			if (die) {
-
+			if (died) {
+				Title gOver = new Title(-1, null);
+				new Thread(gOver).start();
+				gameOver.loop();
+				break;
 			}
 			if (destroyed) {
 				break;
@@ -570,6 +572,14 @@ public class Player extends Character implements IRenderable, Runnable {
 					}
 			}
 		}
+		while(!destroyed){
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void useFury() {
@@ -581,12 +591,13 @@ public class Player extends Character implements IRenderable, Runnable {
 			status = 7;
 			invTime = 1;
 		}
-		fury--;
+		fury-=2;
 		if(fury<=0){
 			sSound.stop();
 			status = 0;
 			damaging = false;
 			useFury = false;
+			furyMax = false;
 			invTime = 0;
 		}
 	}

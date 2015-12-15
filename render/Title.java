@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import input.InputUtility;
+import logic.MainMenu;
+import logic.Monster;
 import logic.Player;
 
 public class Title implements IRenderable, Runnable {
@@ -139,6 +141,25 @@ public class Title implements IRenderable, Runnable {
 		this.visible = false;
 		synchronized (RenderableHolder.getInstance()) {
 			RenderableHolder.getInstance().getRenderableList().remove(this);
+		}
+		if(no == 12)
+			MainMenu.cont = true;
+		if(no == -1){
+			synchronized(RenderableHolder.getInstance()){
+				for (IRenderable entity : RenderableHolder.getInstance().getRenderableList()) {
+					if(entity instanceof Player)
+						((Player)entity).setDestroyed(true);
+					else if(entity instanceof Monster)
+						((Monster)entity).die();
+					if(entity instanceof Title)
+						((Title)entity).setDestroyed(true);
+				}
+				RenderableHolder.getInstance().getRenderableList().clear();
+			}
+			if(Player.gameOver!=null)
+				Player.gameOver.stop();
+			MainMenu mainMenu = new MainMenu(null);
+			new Thread(mainMenu).start();
 		}
 	}
 }

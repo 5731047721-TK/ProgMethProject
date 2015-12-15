@@ -21,10 +21,14 @@ public class MainMenu implements Runnable {
 	private Thread prevThread;
 	private int option;
 	private boolean start;
-	protected static boolean cont;
+	public static boolean cont;
 	private boolean update;
 	private AudioClip mainMusic;
 	private AudioClip storyMusic;
+	private AudioClip creditMusic;
+	private AudioClip titleSelect;
+	private AudioClip titleSpace;
+	private AudioClip titleUpDown;
 	
 	public MainMenu(Thread prevThread) {
 		this.prevThread = prevThread;
@@ -100,6 +104,17 @@ public class MainMenu implements Runnable {
 			select = null;
 			RenderableHolder.getInstance().getRenderableList().remove(eye);
 		}
+		if(storyMusic != null)
+			storyMusic.stop();
+		while(creditMusic==null){
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		creditMusic.loop();
 		Title credit[] = new Title[3];
 		Thread creditT[] = new Thread[3];
 		for(int i = 0;i<3;i++){
@@ -111,7 +126,8 @@ public class MainMenu implements Runnable {
 			creditT[i].start();
 		}
 		start = true;
-		cont = true;
+//		cont = true;
+//		creditMusic.stop();
 		new Thread(new MainMenu(creditT[2])).start();
 	}
 	
@@ -122,11 +138,19 @@ public class MainMenu implements Runnable {
 			ClassLoader loader = MainMenu.class.getClassLoader();
 			mainMusic = Applet.newAudioClip(loader.getResource("src/sfx/Music/gametitle.wav").toURI().toURL());
 			storyMusic = Applet.newAudioClip(loader.getResource("src/sfx/Music/story.wav").toURI().toURL());
+			creditMusic = Applet.newAudioClip(loader.getResource("src/sfx/Music/credit.wav").toURI().toURL());
+			titleSelect =Applet.newAudioClip(loader.getResource("src/sfx/Sound/title_select.wav").toURI().toURL());
+			titleSpace =Applet.newAudioClip(loader.getResource("src/sfx/Sound/title_space.wav").toURI().toURL());
+			titleUpDown =Applet.newAudioClip(loader.getResource("src/sfx/Sound/title_updown.wav").toURI().toURL());
+			 
 		} catch (MalformedURLException | URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			mainMusic = null;
 			storyMusic = null;
+			titleSelect = null;
+			titleSpace = null;
+			titleUpDown = null;
 		}
 		if (prevThread != null) {
 			try {
@@ -140,18 +164,17 @@ public class MainMenu implements Runnable {
 		eye = new Foreground(null, 9998, true, 0);
 		InputUtility instance = InputUtility.getInstance();
 		mainMusic.loop();
+		creditMusic.stop();
 		while (true) {
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// System.out.println("Hello");
 			synchronized (instance) {
 				if (instance.getKeytriggered(KeyEvent.VK_SPACE)) {
 					instance.setKeytriggered(KeyEvent.VK_SPACE, false);
-					// System.out.println(">"+instance.getKeytriggered(KeyEvent.VK_SPACE));
+					titleSpace.play();
 					space();
 					break;
 				}
@@ -175,9 +198,9 @@ public class MainMenu implements Runnable {
 			update = false;
 
 			synchronized (instance) {
-				// System.out.println(instance.getKeytriggered(KeyEvent.VK_SPACE));
 				if (instance.getKeytriggered(KeyEvent.VK_DOWN)) {
 					update = true;
+					titleUpDown.play();
 					if (option < 3)
 						option++;
 					else
@@ -185,6 +208,7 @@ public class MainMenu implements Runnable {
 					instance.setKeytriggered(KeyEvent.VK_DOWN, false);
 				} else if (instance.getKeytriggered(KeyEvent.VK_UP)) {
 					update = true;
+					titleUpDown.play();
 					if (option > 0)
 						option--;
 					else
@@ -194,7 +218,7 @@ public class MainMenu implements Runnable {
 					// update = true;
 					instance.setKeytriggered(KeyEvent.VK_SPACE, false);
 					// RenderableHolder.getInstance().getRenderableList().remove(select);
-
+					titleSelect.play();
 					switch (option) {
 					case 0:
 						start();
@@ -222,6 +246,7 @@ public class MainMenu implements Runnable {
 				break;
 		}
 		mainMusic.stop();
+		mainMusic = null;
 		storyMusic.loop();
 		while(!cont){
 			try {
@@ -231,7 +256,9 @@ public class MainMenu implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		creditMusic.stop();
 		storyMusic.stop();
+		storyMusic = null;
 		cont = false;
 	}
 

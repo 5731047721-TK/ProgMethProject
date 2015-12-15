@@ -3,7 +3,7 @@ package logic;
 public class Data {
 	public static boolean pause;
 	public static int level = 1;
-	public static final int MAX_HP = 10;
+	public static final int MAX_HP = 15;
 	public static final int MAX_FURY = 500;
 	public static final int GRAVITY = -15;
 	public static final int screenWidth = 1024;
@@ -12,7 +12,7 @@ public class Data {
 	public static final int levelExtent = 4*foregroundWidth;
 	public static final int hpInit[] = {176,430,263,20};
 	public static final int furyInit[] = {176,459,263,9};
-	public static final int boss[] = {662,455,213,6};
+	public static final int boss[] = {662,455,214,7};
 	public static final int skill[] = {457,406,524,475};
 	public static final int totalMon = 30;
 	public static final int[] bossFrame = {8,11,24};
